@@ -1,0 +1,8 @@
+
+- name: restart dnscrypt
+  action: service name=dnscrypt-proxy state=restarted
+- name: restart apparmor
+  action: service name=apparmor state=restarted
+- name: ldconfig
+  command: ldconfig
+

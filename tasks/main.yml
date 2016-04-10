@@ -1,0 +1,45 @@
+---
+#tz:
+#myuser:
+## http://dnscrypt.org/
+## https://github.com/opendns/dnscrypt-proxy
+## http://dnscrypt.org/#dnscrypt-proxy
+
+- name: Ubuntu | ppa install
+  include: ubuntu.yml
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Redhat | requirements
+  include: redhat.yml
+  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Source install
+  include: source.yml
+#  when: ansible_distribution != 'Ubuntu'
+  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: enable dnscrypt in resolv.conf
+  lineinfile: dest=/etc/resolv.conf line="nameserver 127.0.0.2" insertbefore=BOF backup=yes
+
+- name: Ensure nrpe.d dir exists
+  file: dest=/etc/nagios/nrpe.d state=directory mode=0755
+- name: add some nrpe commands for monitoring
+  copy: src=dnscrypt-nrpe.cfg dest=/etc/nagios/nrpe.d/dnscrypt-nrpe.cfg mode=0644
+
+## http://bluepilltech.blogspot.ca/2015/05/configuring-openbsd-57s-default-unbound.html
+
+#- name: check dns working
+#  command: host www.google.com
+#  register: hosttest
+#- name: host dns resolution failed
+#  fail: msg="host dns resolution failed"
+#  when: "'SERVFAIL' in hosttest.stderr"
+#- name: check DNSSEC is active
+#  command: drill -S freebsd.org
+#  register: dnssectest
+#- name: DNSSEC is working
+#  fail: msg="DNSSEC resolution failed"
+#  when: dnssectest.stdout.find('DNSKEY') != -1
+#  ignore_errors: yes        ## on centos7, fails in ansible, succeed in cli...
+## OR: dig . SOA +dnssec |grep RRSIG
+

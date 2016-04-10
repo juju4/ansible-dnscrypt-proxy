@@ -1,0 +1,49 @@
+---
+## ppa
+## https://launchpad.net/~anton+/+archive/ubuntu/dnscrypt (most recent)
+## https://launchpad.net/~xuzhen666/+archive/ubuntu/dnscrypt
+## https://launchpad.net/~shnatsel/+archive/ubuntu/dnscrypt (officialy discontinued)
+    - name: add dnscrypt ppa
+      apt_repository: repo='ppa:anton+/dnscrypt'
+
+    - name: Ubuntu | Extra packages install
+      apt: name={{item}} state=present update_cache=yes
+      with_items:
+        - rng-tools
+        - dnscrypt-proxy
+
+# dnscrypt/switch resolv.conf to 127.0.0.2:53 with ppa
+    - name: Creates dnscrypt chroot directory
+      file: path={{ item }} state=directory owner=dnscrypt group=root mode=0755
+      with_items:
+        - /var/log/dnscrypt
+#        - /run/dnscrypt
+## https://saintaardvarkthecarpeted.com/blog/archive/2005/08/_etc_ld_so_nohwcap.html
+    - stat: path=/etc/ld.so.nohwcap
+      register: stld
+    - file: path=/etc/ld.so.nohwcap state=touch
+      when: not stld.stat.exists
+## pid is written as root
+#    - replace: "dest=/etc/init.d/dnscrypt regexp='{{ item.regexp }}' replace='{{ item.replace }}' backup=yes"
+#      with_items:
+#        - { regexp: "^pidfile=/run/dnscrypt-proxy.pid", replace: "pidfile=/run/dnscrypt/dnscrypt-proxy.pid" }
+## if log file enabled, not starting...
+#    - lineinfile: 'dest=/etc/init.d/dnscrypt regexp="^logfile=/var/log/dnscrypt/dnscrypt-proxy-dnscrypt.eu.log" line="logfile=/var/log/dnscrypt/dnscrypt-proxy-dnscrypt.eu.log"'
+#      notify: restart dnscrypt
+
+    - name: install dnscrypt configuration
+      copy: 'src=dnscrypt-proxy.conf dest=/etc/init/dnscrypt-proxy.conf backup=yes mode=0644'
+      notify: restart dnscrypt
+    - name: add ephemeral-keys to default
+      lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^ephemeral-keys" line="ephemeral-keys"'
+      notify: restart dnscrypt
+    - name: add logfile to default
+      lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^logfile=" line="/var/log/dnscrypt/dnscrypt.log"'
+      notify: restart dnscrypt
+    - name: allow logfile writing inside apparmor
+      lineinfile: "dest=/etc/apparmor.d/usr.sbin.dnscrypt-proxy regexp='{{ item.r }}' line='{{ item.l }}' insertafter='/run/dnscrypt-proxy.pid'"
+      with_items:
+        - { r: '  /var/log/dnscrypt/,', l: '  /var/log/dnscrypt/dnscrypt.log mrw,' }
+        - { r: '  capability dac_override,', l: '  capability dac_override,' }
+      notify: restart apparmor
+

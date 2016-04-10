@@ -1,0 +1,13 @@
+---
+- name: install the 'Development tools' package group
+  yum: name="@Development tools" state=present
+
+- yum: name="{{ item }}" state=present
+  with_items:
+    - ldns
+    - libsodium-devel
+
+- lineinfile: dest=/etc/ld.so.conf.d/usr_local_lib.conf regexp=^/usr/local/lib line=/usr/local/lib create=yes
+  notify:
+    - ldconfig
+

@@ -1,0 +1,34 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: ansible_playbook
+  roles_path: ../../roles
+  hosts: test-kitchen
+#  ansible_verbose: true
+  ansible_verbose: false
+  ansible_verbosity: 3
+  ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
+#  name: chef_solo
+
+platforms:
+  - name: ubuntu-14.04
+## 20160119 disabling centos platform because ansible v2 out and epel still in 1.9.4 (some quote escaping act differently)
+  - name: centos-7.1
+
+suites:
+  - name: default
+    run_list:
+    attributes:
+    provisioner:
+      name: ansible_playbook
+      hosts: test-kitchen
+
+  - name: dnscrypt-unbound
+    run_list:
+    attributes:
+    provisioner:
+      name: ansible_playbook
+      hosts: test-dnscrypt-unbound
+      playbook: test/integration/default/default.yml

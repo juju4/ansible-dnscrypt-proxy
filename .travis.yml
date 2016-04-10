@@ -1,0 +1,29 @@
+---
+## Reminder: Travis test only valid on Ubuntu12.04, 14.04 in testing, Centos through docker (leave it to kitchen...)
+language: python
+python: "2.7"
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -qq python-apt python-pycurl
+ - git clone https://github.com/juju4/ansible-role-unbound.git ../jdauphant.unbound
+ - ln -s ansible-dnscrypt-proxy ../dnscrypt-proxy
+## for local travis execution as we use same default.yml than kitchen
+ - mkdir /tmp/kitchen
+install:
+  - pip install ansible
+  - ansible --version
+  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+script:
+  - "echo \"[test-kitchen]\nlocalhost\" > inventory"
+
+# Check the role/playbook's syntax.
+  - "ansible-playbook -i inventory --syntax-check test/integration/default/default.yml"
+
+# Run the role/playbook with ansible-playbook.
+  - "ansible-playbook -i inventory --connection=local --sudo -vvvv test/integration/default/default.yml"
+
+# Run the role/playbook again, checking to make sure it's idempotent.
+  - "ansible-playbook -i inventory test/integration/default/default.yml --connection=local --sudo | tee /tmp/idempotency.log | grep -q 'changed=0.*failed=0'  && (echo 'Idempotence test: pass' && exit 0)  || (echo 'Idempotence test: fail' && cat /tmp/idempotency.log && exit 1)"
+
+# Test DNS
+  - "host www.google.com"
