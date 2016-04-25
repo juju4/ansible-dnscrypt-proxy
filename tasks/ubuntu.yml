@@ -10,6 +10,7 @@
       apt: name={{item}} state=present update_cache=yes
       with_items:
         - rng-tools
+        - apparmor
         - dnscrypt-proxy
 
 # dnscrypt/switch resolv.conf to 127.0.0.2:53 with ppa

@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/juju4/ansible-dnscrypt-proxy.svg?branch=master)](https://travis-ci.org/juju4/ansible-dnscrypt-proxy)
 # dnscrypt proxy ansible role
 
 Ansible role to setup dnscrypt proxy
