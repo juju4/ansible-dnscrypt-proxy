@@ -14,7 +14,7 @@
 - block:
     ## note certificate switched to let's encrypt
     - name: get archive checksum
-      command: "dig +short +dnssec TXT {{ dnscryptproxy_libsodium_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
+      shell: "dig +short +dnssec TXT {{ dnscryptproxy_libsodium_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
       register: dnscryptproxy_libsodium_checksum
     - name: download libsodium archive
       get_url: url={{ dnscryptproxy_libsodium_url }} dest=/root/{{ dnscryptproxy_libsodium_url | basename }} validate_certs=no checksum={{ dnscryptproxy_libsodium_checksum.stdout }}
@@ -22,7 +22,7 @@
     - set_fact:
         lsdir: "{{ dnscryptproxy_libsodium_url | basename }}"
     - name: decompress archive
-      unarchive: src=/root/{{ lsdir[:-7] }} dest=/root/ copy=no
+      unarchive: src=/root/{{ dnscryptproxy_libsodium_url | basename }} dest=/root/ copy=no
     - name: Build libsodium
       shell: "cd /root/{{ lsdir[:-7] }} && ./configure && make -j2"
       notify:
@@ -36,7 +36,7 @@
 - stat: path=/usr/local/sbin/dnscrypt-proxy
   register: stbin
 - name: get archive checksum
-  command: "dig +short +dnssec TXT {{ dnscryptproxy_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
+  shell: "dig +short +dnssec TXT {{ dnscryptproxy_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
   register: dnscryptproxy_checksum
 - name: download archive
   get_url: url={{ dnscryptproxy_url }} dest=/root/{{ dnscryptproxy_url | basename }} mode=0440 checksum={{ dnscryptproxy_checksum.stdout }}
