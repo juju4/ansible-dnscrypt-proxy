@@ -45,7 +45,7 @@
       lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^ephemeral-keys" line="ephemeral-keys"'
       notify: restart dnscrypt
     - name: add logfile to default
-      lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^logfile=" line="/var/log/dnscrypt/dnscrypt.log"'
+      lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^logfile=" line="logfile=/var/log/dnscrypt/dnscrypt.log"'
       notify: restart dnscrypt
     - name: allow logfile writing inside apparmor
       lineinfile: "dest=/etc/apparmor.d/usr.sbin.dnscrypt-proxy regexp='{{ item.r }}' line='{{ item.l }}' insertafter='/run/dnscrypt-proxy.pid'"

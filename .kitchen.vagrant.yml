@@ -32,4 +32,5 @@ suites:
     provisioner:
       name: ansible_playbook
       hosts: test-dnscrypt-unbound
-      playbook: test/integration/default/default.yml
+      playbook: test/integration/dnscrypt-unbound/default.yml
+
