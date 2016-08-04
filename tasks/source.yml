@@ -34,6 +34,9 @@
     - name: Install libsodium from source
       become: yes
       command: "make install chdir=/root/{{ lsdir[:-7] }}"
+## required for compilation of dnscrypt
+    - name: ldconfig
+      command: ldconfig
   when: not stlib.stat.exists and not rpmlib.stat.exists
 
 - stat: path=/usr/local/sbin/dnscrypt-proxy
