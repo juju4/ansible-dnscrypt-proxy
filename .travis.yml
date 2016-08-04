@@ -35,13 +35,16 @@ before_install:
   - env
   - pwd
   - find -ls
+  # role dependencies
+  - ln -s ansible-dnscrypt-proxy ../dnscrypt-proxy
+  - git clone https://github.com/jdauphant/ansible-role-unbound.git ../jdauphant.unbound
   # Customize container
   - 'sudo docker build --rm=true --file=test/travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible test'
 
 script:
   - container_id=$(mktemp)
     # Run container in detached state
-  - 'sudo docker run --detach --volume="${PWD}":/etc/ansible/roles/dnscrypt-proxy:rw ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+  - 'sudo docker run --detach --volume="${PWD%/*}":/etc/ansible/roles:rw ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --version'
 
