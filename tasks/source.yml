@@ -11,20 +11,21 @@
   register: rpmlib
 - stat: path=/usr/local/lib/libsodium.so
   register: stlib
-## note certificate switched to let's encrypt
-- name: download libsodium archive
-  get_url: url={{ dnscryptproxy_libsodium_url }} dest=/root/{{ dnscryptproxy_libsodium_url | basename }} validate_certs=no checksum={{ dnscryptproxy_libsodium_checksum }}
-  when: not stlib.stat.exists and not rpmlib.stat.exists
-- name: decompress archive
-  unarchive: src=/root/{{ dnscryptproxy_libsodium_url | basename }} dest=/root/libsodium copy=no
-- name: Build libsodium
-  shell: "cd /root/libsodium && ./configure && make -j2"
-  notify:
-    - ldconfig
-  when: not stlib.stat.exists and not rpmlib.stat.exists
-- name: Install libsodium from source
-  become: yes
-  command: "make install chdir=/root/libsodium"
+- block:
+    ## note certificate switched to let's encrypt
+    - name: download libsodium archive
+      get_url: url={{ dnscryptproxy_libsodium_url }} dest=/root/{{ dnscryptproxy_libsodium_url | basename }} validate_certs=no checksum={{ dnscryptproxy_libsodium_checksum }}
+      when: not stlib.stat.exists and not rpmlib.stat.exists
+    - name: decompress archive
+      unarchive: src=/root/{{ dnscryptproxy_libsodium_url | basename }} dest=/root/libsodium copy=no
+    - name: Build libsodium
+      shell: "cd /root/libsodium && ./configure && make -j2"
+      notify:
+        - ldconfig
+      when: not stlib.stat.exists and not rpmlib.stat.exists
+    - name: Install libsodium from source
+      become: yes
+      command: "make install chdir=/root/libsodium"
   when: not stlib.stat.exists and not rpmlib.stat.exists
 
 - stat: path=/usr/local/sbin/dnscrypt-proxy
