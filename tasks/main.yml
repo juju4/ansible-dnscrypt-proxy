@@ -7,7 +7,7 @@
   include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
   when: ansible_distribution == 'Ubuntu'
 - name: Include version-specific variables for RedHat
-  include_vars: "CentOS-{{ ansible_distribution_version|int }}.yml"
+  include_vars: "CentOS-{{ ansible_distribution_version.split('.')[0] }}.yml"
   when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - name: Ubuntu | ppa install

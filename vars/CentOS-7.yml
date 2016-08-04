@@ -1,0 +1,7 @@
+---
+
+dnscryptproxy_yum_packages:
+    - ldns
+    - libsodium-devel
+    - bind-utils
+

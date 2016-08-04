@@ -1,0 +1,7 @@
+---
+
+dnscryptproxy_yum_packages:
+    - ldns
+    - bind-utils
+    - libselinux-python
+
