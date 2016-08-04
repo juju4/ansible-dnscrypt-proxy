@@ -9,13 +9,19 @@
     - name: Ubuntu | Extra packages install
       apt: name={{item}} state=present update_cache=yes
       with_items:
-        - rng-tools
         - apparmor
         - dnscrypt-proxy
 
+## Exclude if xenial on lxc
+    - name: Ubuntu | Extra packages install
+      apt: name={{item}} state=present update_cache=yes
+      with_items:
+        - rng-tools
+      when: ansible_distribution == 'Debian' and (ansible_distribution == 'Ubuntu' and ansible_lsb.major_release|int < 16) and (ansible_virtualization_type is not defined or ansible_virtualization_type != "lxc")
+
 # dnscrypt/switch resolv.conf to 127.0.0.2:53 with ppa
     - name: Creates dnscrypt chroot directory
-      file: path={{ item }} state=directory owner=dnscrypt group=root mode=0755
+      file: path={{ item }} state=directory owner={{ dnscryptproxy_user }} group=root mode=0755
       with_items:
         - /var/log/dnscrypt
 #        - /run/dnscrypt

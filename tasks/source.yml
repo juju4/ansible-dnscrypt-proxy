@@ -3,9 +3,9 @@
 #    - name: git clone dnscrypt-proxy
 #      git:
 #        repo=https://github.com/opendns/dnscrypt-proxy
-#        dest=/home/{{ myuser }}/dnscrypt-proxy
+#        dest=/home/{{ dnscryptproxy_user }}/dnscrypt-proxy
 #      become: yes
-#      become_user: "{{ myuser }}"
+#      become_user: "{{ dnscryptproxy_user }}"
 
 - stat: path=/usr/lib64/libsodium.so.13
   register: rpmlib
@@ -44,11 +44,14 @@
   command: "make install chdir=/root/dnscrypt-proxy-1.6.0"
   when: not stbin.stat.exists
 
-- user: name=dnscrypt comment="dnscrypt user" system=yes
+- name: create dnscrypt user '{{ dnscryptproxy_user }}'
+  user: name={{ dnscryptproxy_user }} comment="dnscrypt user" system=yes
 
-- copy: src=dnscrypt-proxy-multi.sh dest=/usr/local/bin/dnscrypt-proxy-multi.sh mode=0755
+- name: add separate script to manage multi dnscrypt server
+  copy: src=dnscrypt-proxy-multi.sh dest=/usr/local/bin/dnscrypt-proxy-multi.sh mode=0755
 
-- file: path=/var/log/dnscrypt mode=0755 owner=dnscrypt state=directory
+- name: ensure log directory exists
+  file: path=/var/log/dnscrypt mode=0755 owner={{ dnscryptproxy_user }} state=directory
 
 - command: /usr/local/bin/dnscrypt-proxy-multi.sh
 
