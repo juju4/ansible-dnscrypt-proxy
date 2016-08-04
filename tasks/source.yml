@@ -17,7 +17,7 @@
       shell: "dig +short +dnssec TXT {{ dnscryptproxy_libsodium_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
       register: dnscryptproxy_libsodium_checksum
     - name: download libsodium archive
-      get_url: url={{ dnscryptproxy_libsodium_url }} dest=/root/{{ dnscryptproxy_libsodium_url | basename }} validate_certs=no checksum={{ dnscryptproxy_libsodium_checksum.stdout }}
+      get_url: url={{ dnscryptproxy_libsodium_url }} dest=/root/{{ dnscryptproxy_libsodium_url | basename }} validate_certs=no checksum=sha256:{{ dnscryptproxy_libsodium_checksum.stdout }}
       when: not stlib.stat.exists and not rpmlib.stat.exists
     - set_fact:
         lsdir: "{{ dnscryptproxy_libsodium_url | basename }}"
@@ -39,7 +39,7 @@
   shell: "dig +short +dnssec TXT {{ dnscryptproxy_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
   register: dnscryptproxy_checksum
 - name: download archive
-  get_url: url={{ dnscryptproxy_url }} dest=/root/{{ dnscryptproxy_url | basename }} mode=0440 checksum={{ dnscryptproxy_checksum.stdout }}
+  get_url: url={{ dnscryptproxy_url }} dest=/root/{{ dnscryptproxy_url | basename }} mode=0440 checksum=sha256:{{ dnscryptproxy_checksum.stdout }}
   when: not stbin.stat.exists
 - name: decompress archive
   unarchive: src=/root/{{ dnscryptproxy_url | basename }} dest=/root/ copy=no
