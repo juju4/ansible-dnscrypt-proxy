@@ -7,6 +7,9 @@
 #      become: yes
 #      become_user: "{{ dnscryptproxy_user }}"
 
+## "msg": "Failed to validate the SSL certificate for download.dnscrypt.org:443. Make sure your managed systems have a valid CA certificate installed. If the website serving the url uses SNI you need python >= 2.7.9 on your managed machine or you can install the `urllib3`, `pyopenssl`, `ndg-httpsclient`, and `pyasn1` python modules to perform SNI verification in python >= 2.6. You can use validate_certs=False if you do not need to confirm the servers identity but this is unsafe and not recommended. Paths checked for this platform: /etc/ssl/certs, /etc/pki/ca-trust/extracted/pem, /etc/pki/tls/certs, /usr/share/ca-certificates/cacert.org, /etc/ansible"
+## = validate_certs=no + checksums
+
 - stat: path=/usr/lib64/libsodium.so.13
   register: rpmlib
 - stat: path=/usr/local/lib/libsodium.so
@@ -40,7 +43,7 @@
   register: dnscryptproxy_checksum
 - debug: var={{ dnscryptproxy_checksum.stdout }}
 - name: download archive
-  get_url: url={{ dnscryptproxy_url }} dest=/root/{{ dnscryptproxy_url | basename }} mode=0440 checksum=sha256:{{ dnscryptproxy_checksum.stdout }}
+  get_url: url={{ dnscryptproxy_url }} dest=/root/{{ dnscryptproxy_url | basename }} mode=0440 validate_certs=no checksum=sha256:{{ dnscryptproxy_checksum.stdout }}
   when: not stbin.stat.exists
 - name: decompress archive
   unarchive: src=/root/{{ dnscryptproxy_url | basename }} dest=/root/ copy=no
