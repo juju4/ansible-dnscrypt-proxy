@@ -16,6 +16,7 @@
     - name: get archive checksum
       shell: "dig +short +dnssec TXT {{ dnscryptproxy_libsodium_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
       register: dnscryptproxy_libsodium_checksum
+    - debug: var={{ dnscryptproxy_libsodium_checksum.stdout }}
     - name: download libsodium archive
       get_url: url={{ dnscryptproxy_libsodium_url }} dest=/root/{{ dnscryptproxy_libsodium_url | basename }} validate_certs=no checksum=sha256:{{ dnscryptproxy_libsodium_checksum.stdout }}
       when: not stlib.stat.exists and not rpmlib.stat.exists
@@ -38,6 +39,7 @@
 - name: get archive checksum
   shell: "dig +short +dnssec TXT {{ dnscryptproxy_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
   register: dnscryptproxy_checksum
+- debug: var={{ dnscryptproxy_checksum.stdout }}
 - name: download archive
   get_url: url={{ dnscryptproxy_url }} dest=/root/{{ dnscryptproxy_url | basename }} mode=0440 checksum=sha256:{{ dnscryptproxy_checksum.stdout }}
   when: not stbin.stat.exists
