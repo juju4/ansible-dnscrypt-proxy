@@ -5,8 +5,5 @@ dnscryptproxy_user: dnscrypt
 
 ## if building from source (redhat)
 dnscryptproxy_libsodium_url: 'https://download.libsodium.org/libsodium/releases/libsodium-1.0.11.tar.gz'
-dnscryptproxy_libsodium_checksum: 'sha256:a14549db3c49f6ae2170cbbf4664bd48ace50681045e8dbea7c8d9fb96f9c765'
-
-dnscryptproxy_url: 'https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-proxy-ios-1.7.0.tar.gz'
-dnscryptproxy_checksum: 'sha256:636b9a7174a4c816f7c00451a7109f19fbc6fc0b8b2094d6742ce369be3b2f66'
+dnscryptproxy_url: 'https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-proxy-1.7.0.tar.gz'
 
