@@ -24,6 +24,10 @@ env:
 #    version: 12.04
 #    init: /sbin/init
 #    run_opts: ""
+#  - distribution: alpine
+#    version: 3.4
+#    init: /sbin/init
+#    run_opts: ""
 
 services:
   - docker
@@ -37,7 +41,7 @@ before_install:
   - find -ls
   # role dependencies
   - ln -s ansible-dnscrypt-proxy ../dnscrypt-proxy
-  - git clone https://github.com/jdauphant/ansible-role-unbound.git ../jdauphant.unbound
+  - sh -x get-dependencies.sh
   # Customize container
   - 'sudo docker build --rm=true --file=test/travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible test'
 

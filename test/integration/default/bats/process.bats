@@ -22,11 +22,17 @@ setup() {
     [[ "$output" != "SERVFAIL" ]]
 }
 
-@test "standard dns resolution: host www.yahoo.com" {
-    run host www.yahoo.com
+@test "standard dns resolution: host www.cnn.com" {
+    run host www.cnn.com
     [ "$status" -eq 0 ]
     [[ "$output" != "SERVFAIL" ]]
 }
+
+#@test "standard dns resolution: dig www.cnn.com @127.0.0.1" {
+#    run dig www.cnn.com @127.0.0.1
+#    [ "$status" -eq 0 ]
+#    [[ "$output" != "SERVFAIL" ]]
+#}
 
 @test "standard dns resolution: host www.bing.com" {
     run host www.bing.com

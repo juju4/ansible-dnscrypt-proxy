@@ -68,6 +68,9 @@ Test failed or not sometimes but when trying later, it works...
 * No additional security is provided. Review
 It's recommended to use with a caching dns server
 
+* Firewall
+port tcp/443 and udp/443 should be opened
+
 * Monitoring
 http://dns.measurement-factory.com/tools/nagios-plugins/check_zone_rrsig_expiration.html
 http://www.bortzmeyer.org/monitor-dnssec.html

@@ -23,5 +23,4 @@
       when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
     - name: Redhat | Update current resolv.conf
       lineinfile: "dest=/etc/resolv.conf regexp=^nameserver line='nameserver {{ local_dns_resolvconf }}' backup=yes"
-      when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 

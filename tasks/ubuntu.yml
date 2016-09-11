@@ -6,6 +6,7 @@
     - name: add dnscrypt ppa
       apt_repository: repo='ppa:anton+/dnscrypt'
 
+## FIXME! xenial: dmesg: read kernel buffer failed: Operation not permitted
     - name: Ubuntu | Extra packages install
       apt: name={{item}} state=present update_cache=yes
       with_items:
