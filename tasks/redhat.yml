@@ -5,7 +5,7 @@
 
 - name: yum | install libsodium
   yum: name="{{ item }}" state=present
-  with_items: "{{ dnscryptproxy_yum_packages }}"
+  with_items: "{{ dnscrypt_pkg }}"
 
 - name: update ldconfig path search
   lineinfile: dest=/etc/ld.so.conf.d/usr_local_lib.conf regexp=^/usr/local/lib line=/usr/local/lib create=yes

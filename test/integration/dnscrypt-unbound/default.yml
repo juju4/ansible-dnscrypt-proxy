@@ -5,7 +5,7 @@
     - local_dns_resolvconf: 127.0.0.1
     - unbound_forward_zone: { 127.0.0.2@53 }
   roles:
-    - dnscrypt-proxy
+    - juju4.dnscrypt-proxy
     - jdauphant.unbound
   tasks:
 ## Debian/Ubuntu bug: using only dnscrypt

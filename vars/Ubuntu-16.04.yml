@@ -3,3 +3,7 @@
 ## from package
 dnscryptproxy_user: _dnscrypt-proxy
 
+dnscrypt_pkg:
+        - apparmor
+        - dnscrypt-proxy
+

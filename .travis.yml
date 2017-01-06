@@ -40,8 +40,7 @@ before_install:
   - pwd
   - find -ls
   # role dependencies
-  - ln -s ansible-dnscrypt-proxy ../dnscrypt-proxy
-  - sh -x get-dependencies.sh
+  - "[ -f get-dependencies.sh ] && sh -x get-dependencies.sh"
   # Customize container
   - 'sudo docker build --rm=true --file=test/travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible test'
 

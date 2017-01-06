@@ -20,10 +20,11 @@ provisioner:
   ansible_connection: ssh
 
 platforms:
+## FIXME! ansible v2.2, https://github.com/ansible/ansible-modules-core/issues/5459
 #  - name: ubuntu-16.04
   - name: ubuntu-14.04
   - name: ubuntu-12.04
-#  - name: centos-7
+  - name: centos-7
 #  - name: centos-6
 #  - name: alpine-3.4
 

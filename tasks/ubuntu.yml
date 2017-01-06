@@ -7,11 +7,10 @@
       apt_repository: repo='ppa:anton+/dnscrypt'
 
 ## FIXME! xenial: dmesg: read kernel buffer failed: Operation not permitted
+## FIXME! ansible v2.2, https://github.com/ansible/ansible-modules-core/issues/5459
     - name: Ubuntu | Extra packages install
       apt: name={{item}} state=present update_cache=yes
-      with_items:
-        - apparmor
-        - dnscrypt-proxy
+      with_items: "{{ dnscrypt_pkg }}"
 
 ## Exclude if xenial on lxc
     - name: Ubuntu | Extra packages install
