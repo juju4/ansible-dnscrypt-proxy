@@ -4,9 +4,11 @@ dnscrypt_pkg:
     - ldns
     - bind-utils
     - libselinux-python
+    - ca-certificates
 
 dnscryptproxy_src_deps:
     - ldns-devel
+    - ca-certificates
 
 dnscryptproxy_src_systemd_deps: []
 
