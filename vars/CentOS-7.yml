@@ -5,3 +5,10 @@ dnscrypt_pkg:
     - libsodium-devel
     - bind-utils
 
+dnscryptproxy_src_deps:
+    - ldns-devel
+
+dnscryptproxy_src_systemd_deps:
+    - pkgconfig
+    - systemd-devel
+

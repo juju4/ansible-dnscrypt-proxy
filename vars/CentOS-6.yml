@@ -5,3 +5,8 @@ dnscrypt_pkg:
     - bind-utils
     - libselinux-python
 
+dnscryptproxy_src_deps:
+    - ldns-devel
+
+dnscryptproxy_src_systemd_deps: []
+

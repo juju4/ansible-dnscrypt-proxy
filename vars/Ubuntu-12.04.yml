@@ -6,7 +6,11 @@ dnscryptproxy_user: dnscrypt
 dnscrypt_pkg:
     - apparmor
     - dnscrypt-proxy
+    - ca-certificates
 
 dnscryptproxy_src_deps:
     - libldns-dev
+    - ca-certificates
+
+dnscryptproxy_src_systemd_deps: []
 

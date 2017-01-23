@@ -48,12 +48,18 @@
 - name: add logfile to default
   lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^logfile=" line="logfile=/var/log/dnscrypt/dnscrypt.log"'
   notify: restart dnscrypt
-- name: allow logfile writing inside apparmor
-  lineinfile: "dest=/etc/apparmor.d/usr.sbin.dnscrypt-proxy regexp='{{ item.r }}' line='{{ item.l }}' insertafter='/run/dnscrypt-proxy.pid'"
-  with_items:
-    - { r: '  /var/log/dnscrypt/,', l: '  /var/log/dnscrypt/dnscrypt.log mrw,' }
-    - { r: '  capability dac_override,', l: '  capability dac_override,' }
-  notify: restart apparmor
+
+- name: check if apparmor config is present
+  stat: path=/etc/apparmor.d/usr.sbin.dnscrypt-proxy
+  register: armor
+- block:
+    - name: allow logfile writing inside apparmor
+      lineinfile: "dest=/etc/apparmor.d/usr.sbin.dnscrypt-proxy regexp='{{ item.r }}' line='{{ item.l }}' insertafter='/run/dnscrypt-proxy.pid'"
+      with_items:
+        - { r: '  /var/log/dnscrypt/,', l: '  /var/log/dnscrypt/dnscrypt.log mrw,' }
+        - { r: '  capability dac_override,', l: '  capability dac_override,' }
+      notify: restart apparmor
+  when: armor.stat.exists
 
 ## Note: without checksum, ansible will not refresh the file... force to delete if say older than...
 - name: check resolver file last modification

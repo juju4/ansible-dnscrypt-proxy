@@ -17,9 +17,7 @@
 - block:
     - name: source build dependencies packages install with systemd
       package: name={{item}} state=present
-      with_items:
-        - pkg-config
-        - libsystemd-dev
+      with_items: "{{ dnscryptproxy_src_systemd_deps }}"
     - set_fact:
         configure_args: "--with-systemd"
   when: ansible_service_mgr == 'systemd'
