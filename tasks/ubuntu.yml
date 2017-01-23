@@ -3,33 +3,34 @@
 ## https://launchpad.net/~anton+/+archive/ubuntu/dnscrypt (most recent)
 ## https://launchpad.net/~xuzhen666/+archive/ubuntu/dnscrypt
 ## https://launchpad.net/~shnatsel/+archive/ubuntu/dnscrypt (officialy discontinued)
-    - name: add dnscrypt ppa
-      apt_repository: repo='ppa:anton+/dnscrypt'
+- name: add dnscrypt ppa
+  apt_repository: repo='ppa:anton+/dnscrypt'
+  when: ansible_distribution_release == 'trusty'
 
 ## FIXME! xenial: dmesg: read kernel buffer failed: Operation not permitted
 ## FIXME! ansible v2.2, https://github.com/ansible/ansible-modules-core/issues/5459
-    - name: Ubuntu | Extra packages install
-      apt: name={{item}} state=present update_cache=yes
-      with_items: "{{ dnscrypt_pkg }}"
+- name: Ubuntu | Extra packages install
+  apt: name={{item}} state=present update_cache=yes
+  with_items: "{{ dnscrypt_pkg }}"
 
 ## Exclude if xenial on lxc
-    - name: Ubuntu | Extra packages install
-      apt: name={{item}} state=present update_cache=yes
-      with_items:
-        - rng-tools
-      when: ansible_distribution == 'Debian' and (ansible_distribution == 'Ubuntu' and ansible_lsb.major_release|int < 16) and (ansible_virtualization_type is not defined or ansible_virtualization_type != "lxc")
+- name: Ubuntu | Extra packages install
+  apt: name={{item}} state=present update_cache=yes
+  with_items:
+    - rng-tools
+  when: ansible_distribution == 'Debian' and (ansible_distribution == 'Ubuntu' and ansible_lsb.major_release|int < 16) and (ansible_virtualization_type is not defined or ansible_virtualization_type != "lxc")
 
 # dnscrypt/switch resolv.conf to 127.0.0.2:53 with ppa
-    - name: Creates dnscrypt chroot directory
-      file: path={{ item }} state=directory owner={{ dnscryptproxy_user }} group=root mode=0755
-      with_items:
-        - /var/log/dnscrypt
+- name: Creates dnscrypt chroot directory
+  file: path={{ item }} state=directory owner={{ dnscryptproxy_user }} group=root mode=0755
+  with_items:
+    - /var/log/dnscrypt
 #        - /run/dnscrypt
 ## https://saintaardvarkthecarpeted.com/blog/archive/2005/08/_etc_ld_so_nohwcap.html
-    - stat: path=/etc/ld.so.nohwcap
-      register: stld
-    - file: path=/etc/ld.so.nohwcap state=touch
-      when: not stld.stat.exists
+- stat: path=/etc/ld.so.nohwcap
+  register: stld
+- file: path=/etc/ld.so.nohwcap state=touch
+  when: not stld.stat.exists
 ## pid is written as root
 #    - replace: "dest=/etc/init.d/dnscrypt regexp='{{ item.regexp }}' replace='{{ item.replace }}' backup=yes"
 #      with_items:
@@ -38,19 +39,47 @@
 #    - lineinfile: 'dest=/etc/init.d/dnscrypt regexp="^logfile=/var/log/dnscrypt/dnscrypt-proxy-dnscrypt.eu.log" line="logfile=/var/log/dnscrypt/dnscrypt-proxy-dnscrypt.eu.log"'
 #      notify: restart dnscrypt
 
-    - name: install dnscrypt configuration
-      copy: 'src=dnscrypt-proxy.conf dest=/etc/init/dnscrypt-proxy.conf backup=yes mode=0644'
-      notify: restart dnscrypt
-    - name: add ephemeral-keys to default
-      lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^ephemeral-keys" line="ephemeral-keys"'
-      notify: restart dnscrypt
-    - name: add logfile to default
-      lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^logfile=" line="logfile=/var/log/dnscrypt/dnscrypt.log"'
-      notify: restart dnscrypt
-    - name: allow logfile writing inside apparmor
-      lineinfile: "dest=/etc/apparmor.d/usr.sbin.dnscrypt-proxy regexp='{{ item.r }}' line='{{ item.l }}' insertafter='/run/dnscrypt-proxy.pid'"
-      with_items:
-        - { r: '  /var/log/dnscrypt/,', l: '  /var/log/dnscrypt/dnscrypt.log mrw,' }
-        - { r: '  capability dac_override,', l: '  capability dac_override,' }
-      notify: restart apparmor
+- name: install dnscrypt configuration
+  copy: 'src=dnscrypt-proxy.conf dest=/etc/init/dnscrypt-proxy.conf backup=yes mode=0644'
+  notify: restart dnscrypt
+- name: add ephemeral-keys to default
+  lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^ephemeral-keys" line="ephemeral-keys"'
+  notify: restart dnscrypt
+- name: add logfile to default
+  lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^logfile=" line="logfile=/var/log/dnscrypt/dnscrypt.log"'
+  notify: restart dnscrypt
+- name: allow logfile writing inside apparmor
+  lineinfile: "dest=/etc/apparmor.d/usr.sbin.dnscrypt-proxy regexp='{{ item.r }}' line='{{ item.l }}' insertafter='/run/dnscrypt-proxy.pid'"
+  with_items:
+    - { r: '  /var/log/dnscrypt/,', l: '  /var/log/dnscrypt/dnscrypt.log mrw,' }
+    - { r: '  capability dac_override,', l: '  capability dac_override,' }
+  notify: restart apparmor
+
+## Note: without checksum, ansible will not refresh the file... force to delete if say older than...
+- name: check resolver file last modification
+  command: "find /usr/share/dnscrypt-proxy/ -mtime +30"
+  register: findr
+  changed_when: false
+- name: force resolver file refresh
+  file: dest=/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv state=absent
+  when: "'dnscrypt-resolvers.csv' in findr.stdout"
+## https://github.com/jedisct1/dnscrypt-proxy/issues/270
+- name: update resolvers file
+  get_url:
+    url: "{{ item }}"
+    dest: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
+    mode: '0644'
+    backup: yes
+  with_items:
+    - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv
+    - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv.sig
+- name: recover gpg key
+  command: "gpg --keyserver pgp.uni-mainz.de --recv-keys 0x62F25B592B6F76DA"
+  register: import
+  changed_when: "'imported: 1' in import.stdout"
+- name: check resolvers file signature
+  command: "gpg --verify /usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv.sig"
+  register: gpgresult
+  changed_when: false
+  failed_when: gpgresult.rc != 0
 

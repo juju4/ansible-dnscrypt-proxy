@@ -10,6 +10,20 @@
 ## "msg": "Failed to validate the SSL certificate for download.dnscrypt.org:443. Make sure your managed systems have a valid CA certificate installed. If the website serving the url uses SNI you need python >= 2.7.9 on your managed machine or you can install the `urllib3`, `pyopenssl`, `ndg-httpsclient`, and `pyasn1` python modules to perform SNI verification in python >= 2.6. You can use validate_certs=False if you do not need to confirm the servers identity but this is unsafe and not recommended. Paths checked for this platform: /etc/ssl/certs, /etc/pki/ca-trust/extracted/pem, /etc/pki/tls/certs, /usr/share/ca-certificates/cacert.org, /etc/ansible"
 ## = validate_certs=no + checksums
 
+- name: source build dependencies packages install 
+  package: name={{item}} state=present
+  with_items: "{{ dnscryptproxy_src_deps }}"
+
+- block:
+    - name: source build dependencies packages install with systemd
+      package: name={{item}} state=present
+      with_items:
+        - pkg-config
+        - libsystemd-dev
+    - set_fact:
+        configure_args: "--with-systemd"
+  when: ansible_service_mgr == 'systemd'
+
 - stat: path=/usr/lib64/libsodium.so.13
   register: rpmlib
 - stat: path=/usr/local/lib/libsodium.so
@@ -39,27 +53,48 @@
       command: ldconfig
   when: not stlib.stat.exists and not rpmlib.stat.exists
 
-- stat: path=/usr/local/sbin/dnscrypt-proxy
-  register: stbin
-- name: get archive checksum
-  shell: "dig +short +dnssec TXT {{ dnscryptproxy_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
-  register: dnscryptproxy_checksum
-- debug: var={{ dnscryptproxy_checksum.stdout }}
-- name: download archive
-  get_url: url={{ dnscryptproxy_url }} dest=/root/{{ dnscryptproxy_url | basename }} mode=0440 validate_certs=no checksum=sha256:{{ dnscryptproxy_checksum.stdout }}
-  when: not stbin.stat.exists
+### Not available anymore since 1.8.0
+#- stat: path=/usr/local/sbin/dnscrypt-proxy
+#  register: stbin
+#- name: get archive checksum
+#  shell: "dig +short +dnssec TXT {{ dnscryptproxy_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
+#  register: dnscryptproxy_checksum
+#- debug: var=dnscryptproxy_checksum
+#- name: download archive
+#  get_url: url={{ dnscryptproxy_url }} dest=/root/{{ dnscryptproxy_url | basename }} mode=0440 validate_certs=no checksum=sha256:{{ dnscryptproxy_checksum.stdout }}
+#  when: not stbin.stat.exists
+###
+- name: download dnscrypt archive
+  get_url:
+    url: "{{ item }}"
+    dest: "/root/{{ item | basename }}"
+    mode: '0644'
+    backup: yes 
+  with_items:
+    - "{{ dnscryptproxy_url }}"
+    - "{{ dnscryptproxy_url }}.sig"
+- name: recover gpg key 
+  command: "gpg --keyserver pgp.uni-mainz.de --recv-keys 0x62F25B592B6F76DA"
+  register: import
+  changed_when: "'imported: 1' in import.stdout"
+- name: check resolvers file signature
+  command: "gpg --verify /root/{{ dnscryptproxy_url | basename }}.sig"
+  register: gpgresult
+  changed_when: false
+  failed_when: gpgresult.rc != 0
+
 - name: decompress archive
   unarchive: src=/root/{{ dnscryptproxy_url | basename }} dest=/root/ copy=no
 - set_fact:
     dpdir: "{{ dnscryptproxy_url | basename }}"
 - name: Build dnscrypt-proxy
-  shell: "cd /root/{{ dpdir[:-7] }} && ./configure && make -j2"
-  when: not stbin.stat.exists
+  shell: "cd /root/{{ dpdir[:-7] }} && ./configure {{ configure_args | default('') }} && make -j2 creates=/root/{{ dpdir[:-7] }}/src/proxy/dnscrypt-proxy"
 - name: Install dnscrypt-proxy
   become: yes
-  command: "make install chdir=/root/{{ dpdir[:-7] }}"
-  when: not stbin.stat.exists
+  command: "make install chdir=/root/{{ dpdir[:-7] }} creates=/usr/local/sbin/dnscrypt-proxy"
 
+- set_fact:
+    dnscryptproxy_user: _dnscrypt-proxy
 - name: create dnscrypt user '{{ dnscryptproxy_user }}'
   user: name={{ dnscryptproxy_user }} comment="dnscrypt user" system=yes
 
@@ -69,5 +104,64 @@
 - name: ensure log directory exists
   file: path=/var/log/dnscrypt mode=0755 owner={{ dnscryptproxy_user }} state=directory
 
-- command: /usr/local/bin/dnscrypt-proxy-multi.sh
+## for 1.7.0, not needed in 1.9.4/systemd
+#- name: start dnscrypt
+#  command: /usr/local/bin/dnscrypt-proxy-multi.sh
+
+- name: review configuration
+  lineinfile:
+    dest: /usr/local/etc/dnscrypt-proxy.conf
+    regexp: "{{ item.re }}"
+    line: "{{ item.l }}"
+    insertafter: "{{ item.i }}"
+    backup: yes
+  with_items:
+    - { re: '^User .*', l: 'User _dnscrypt-proxy', i: '^# User _dnscrypt-proxy' }
+  notify:
+    - restart dnscrypt
+
+- block:
+    - name: ensure dnscrypt-proxy service file is present
+      copy:
+        src: "/root/{{ dpdir[:-7] }}/{{ item }}"
+        dest: "/lib/systemd/system/{{ item }}"
+        mode: '0644'
+        backup: yes
+      with_items:
+        - dnscrypt-proxy.service
+        - dnscrypt-proxy.socket
+      notify:
+        - reload systemd
+    - name: use 127.0.0.2 as binding interface
+      replace:
+        dest: /lib/systemd/system/dnscrypt-proxy.socket
+        regexp: 127.0.0.1
+        replace: 127.0.0.2
+        backup: yes
+      notify:
+        - reload systemd
+  when: ansible_service_mgr == 'systemd'
+
+- block:
+    - name: install upstart script
+      template:
+        src: upstart-dnscrypt-proxy.conf
+        dest: /etc/init/dnscrypt-proxy.conf
+        mode: '0644'
+        backup: yes
+    - name: enable daemon mode in configuration
+      lineinfile:
+        dest: /usr/local/etc/dnscrypt-proxy.conf
+        regexp: "{{ item.re }}"
+        line: "{{ item.rep }}"
+        backup: yes
+      with_items:
+        - { re: "^Daemonize .*", rep: "Daemonize yes" }
+        - { re: "^LocalAddress .*", rep: "LocalAddress 127.0.0.2:53" }
+      notify:
+        - restart dnscrypt
+  when: ansible_distribution_release == 'trusty'
+
+- name: ensure dnscrypt-proxy service is enabled and started.
+  service: name=dnscrypt-proxy state=started enabled=yes
 

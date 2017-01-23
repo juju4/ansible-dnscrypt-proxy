@@ -3,8 +3,11 @@
 ## maybe ovveriden by distribution values (from their packages)
 dnscryptproxy_user: dnscrypt
 
+dnscryptproxy_force_source: false
+
 ## if building from source (redhat)
-dnscryptproxy_libsodium_url: 'https://download.libsodium.org/libsodium/releases/libsodium-1.0.11.tar.gz'
+#dnscryptproxy_libsodium_url: 'https://download.libsodium.org/libsodium/releases/libsodium-1.0.11.tar.gz'
+dnscryptproxy_libsodium_url: 'https://github.com/jedisct1/libsodium/releases/download/1.0.11/libsodium-1.0.11.tar.gz'
 dnscryptproxy_libsodium_checksum: 'a14549db3c49f6ae2170cbbf4664bd48ace50681045e8dbea7c8d9fb96f9c765'
-dnscryptproxy_url: 'https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-proxy-1.7.0.tar.gz'
+dnscryptproxy_url: 'https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-proxy-1.9.4.tar.gz'
 

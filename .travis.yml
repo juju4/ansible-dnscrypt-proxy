@@ -7,18 +7,32 @@ env:
     version: 6
     init: /sbin/init
     run_opts: ""
+    ansible_extra_vars: ''
   - distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+    ansible_extra_vars: ''
   - distribution: ubuntu
     version: 16.04
     init: /lib/systemd/systemd
     run_opts: ""
+    ansible_extra_vars: ''
   - distribution: ubuntu
     version: 14.04
     init: /sbin/init
     run_opts: ""
+    ansible_extra_vars: ''
+  - distribution: ubuntu
+    version: 16.04
+    init: /lib/systemd/systemd
+    run_opts: ""
+    ansible_extra_vars: "'-e dnscryptproxy_force_source=true'"
+  - distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+    run_opts: ""
+    ansible_extra_vars: "'-e dnscryptproxy_force_source=true'"
 ## "Tag 12.04 not found in repository docker.io/library/ubuntu"
 #  - distribution: ubuntu
 #    version: 12.04
@@ -55,11 +69,11 @@ script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.dnscrypt-proxy/test/integration/default/default.yml --syntax-check'
 
   # Test role.
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.dnscrypt-proxy/test/integration/default/default.yml -vvv'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.dnscrypt-proxy/test/integration/default/default.yml -vvv ${ansible_extra_vars}'
 
   # Test role idempotence. known fail
   - >
-    sudo docker exec "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.dnscrypt-proxy/test/integration/default/default.yml
+    sudo docker exec "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.dnscrypt-proxy/test/integration/default/default.yml ${ansible_extra_vars}
     | tee /tmp/idempotency.log
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotence test: pass' && exit 0)

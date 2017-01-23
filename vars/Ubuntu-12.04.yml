@@ -4,6 +4,9 @@
 dnscryptproxy_user: dnscrypt
 
 dnscrypt_pkg:
-        - apparmor
-        - dnscrypt-proxy
+    - apparmor
+    - dnscrypt-proxy
+
+dnscryptproxy_src_deps:
+    - libldns-dev
 

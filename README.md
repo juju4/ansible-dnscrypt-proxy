@@ -4,16 +4,20 @@
 Ansible role to setup dnscrypt proxy
 Allow to encrypt dns traffic to a central dns server in order to provide better privacy.
 
+Ubuntu install is using 'ppa:anton+/dnscrypt' on Trusty and official package on Xenial, both at 1.6.1
+RedHat install is from source, current latest 1.9.4 (Jan 2017)
+
 ## Requirements & Dependencies
 
 ### Ansible
 It was tested on the following versions:
  * 1.9
  * 2.0
+ * 2.2
 
 ### Operating systems
 
-Tested with vagrant on Ubuntu 14.04 and Centos 7.1
+Tested with vagrant on Ubuntu 16.04, 14.04 and Centos 7.1
 Kitchen test available
 
 ### Dependencies
@@ -28,7 +32,7 @@ For example
 ```
 - host: myhost
   roles:
-    - dnscrypt-proxy
+    - juju4.dnscrypt-proxy
 ```
 
 If you want to use it with a dns cacher
@@ -37,7 +41,7 @@ If you want to use it with a dns cacher
   vars:
     ...
   roles:
-    - dnscrypt-proxy
+    - juju4.dnscrypt-proxy
     - jdauphant.unbound
 ```
 (see test/integration/default/default.yml)

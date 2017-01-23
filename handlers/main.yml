@@ -6,12 +6,15 @@
 #fatal: [localhost]: FAILED! => {"changed": false, "failed": true, "msg": "All profile caches have been cleared, but no profiles have been unloaded.\nUnloading profiles will leave already running processes permanently\nunconfined, which can lead to unexpected situations.\n\nTo set a process to complain mode, use the command line tool\n'aa-complain'. To really tear down all profiles, run the init script\nwith the 'teardown' option.\"\nmount: permission denied\n"}
 
 - name: restart dnscrypt
-  action: service name=dnscrypt-proxy state=restarted
+  service: name=dnscrypt-proxy state=restarted
   when:  ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
 - name: restart apparmor
-  action: service name=apparmor state=restarted
+  service: name=apparmor state=restarted
   when:  ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
 
 - name: ldconfig
   command: ldconfig
+
+- name: reload systemd
+  command: "systemctl daemon-reload"
 
