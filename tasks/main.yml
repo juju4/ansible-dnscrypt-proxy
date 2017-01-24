@@ -12,7 +12,10 @@
 
 - block:
     - name: ensure python pip is present
-      package: name=python-pip state=present
+      package: name={{ item }} state=present
+      with_items:
+        - python-pip
+        - "{{ python_dev }}"
     - name: old python - SNI workaround
       pip: name={{ item }} state=present
       with_items:

@@ -8,6 +8,7 @@ dnscrypt_pkg:
     - dnscrypt-proxy
     - ca-certificates
 
+python_dev: python-dev
 dnscryptproxy_src_deps:
     - libldns-dev
     - ca-certificates
