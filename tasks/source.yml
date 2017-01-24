@@ -63,11 +63,13 @@
 #  when: not stbin.stat.exists
 ###
 - name: download dnscrypt archive
-  get_url:
-    url: "{{ item }}"
-    dest: "/root/{{ item | basename }}"
-    mode: '0644'
-    backup: yes 
+#  get_url:
+#    url: "{{ item }}"
+#    dest: "/root/{{ item | basename }}"
+#    mode: '0644'
+#    backup: yes 
+## python certificate/SNI issue
+  command: "curl -o /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
   with_items:
     - "{{ dnscryptproxy_url }}"
     - "{{ dnscryptproxy_url }}.sig"

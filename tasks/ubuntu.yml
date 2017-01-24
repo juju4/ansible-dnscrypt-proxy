@@ -61,6 +61,9 @@
       notify: restart apparmor
   when: armor.stat.exists
 
+- name: ensure target directory exist
+  file: dest=/usr/share/dnscrypt-proxy state=directory mode=0755
+
 ## Note: without checksum, ansible will not refresh the file... force to delete if say older than...
 - name: check resolver file last modification
   command: "find /usr/share/dnscrypt-proxy/ -mtime +30"
@@ -70,7 +73,7 @@
   file: dest=/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv state=absent
   when: "'dnscrypt-resolvers.csv' in findr.stdout"
 ## https://github.com/jedisct1/dnscrypt-proxy/issues/270
-## https://github.com/ansible/ansible/issues/11579#issuecomment-121775819   different X509v3 SAN DNS...
+## https://github.com/ansible/ansible/issues/11579#issuecomment-121775819   SNI/different X509v3 SAN DNS...
 - name: update resolvers file
 #  get_url:
 #    url: "{{ item }}"
