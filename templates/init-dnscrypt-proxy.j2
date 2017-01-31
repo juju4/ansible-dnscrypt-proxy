@@ -1,4 +1,26 @@
 #!/bin/bash
+#
+# dnscrypt-proxy        Startup script for dnscrypt-proxy.
+#
+# chkconfig: 2345 12 88
+# description: dnscrypt-proxy is a dnscrypt client. DNSCrypt is a \
+# protocol that authenticates communications between a DNS client \
+# and a DNS resolver. It prevents DNS spoofing. It uses \
+# cryptographic signatures to verify that responses originate from \
+# the chosen DNS resolver and haven't been tampered with.
+# run dnscrypt-proxy.
+### BEGIN INIT INFO
+# Required-Start: $local_fs
+# Required-Stop: $local_fs
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: DNSCrypt client for improved DNS security
+# Description: dnscrypt-proxy is a dnscrypt client. DNSCrypt is a
+#              protocol that authenticates communications between a
+#              DNS client and a DNS resolver. It prevents DNS spoofing.
+#              It uses cryptographic signatures to verify that responses
+#              originate from the chosen DNS resolver and haven't been tampered with.
+### END INIT INFO
 
 # Source function library.
 . /etc/init.d/functions
