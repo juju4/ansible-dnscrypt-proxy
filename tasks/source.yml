@@ -39,7 +39,7 @@
     - name: decompress archive
       unarchive: src=/root/{{ dnscryptproxy_libsodium_url | basename }} dest=/root/ copy=no
     - name: Build libsodium
-      shell: "cd /root/{{ lsdir[:-7] }} && ./configure && make -j2"
+      shell: "cd /root/{{ lsdir[:-7] }} && ./configure --prefix={{ dnscryptproxy_source_prefix }} && make -j2"
       notify:
         - ldconfig
       when: not stlib.stat.exists and not rpmlib.stat.exists
@@ -88,10 +88,10 @@
 - set_fact:
     dpdir: "{{ dnscryptproxy_url | basename }}"
 - name: Build dnscrypt-proxy
-  shell: "cd /root/{{ dpdir[:-7] }} && ./configure {{ configure_args | default('') }} && make -j2 creates=/root/{{ dpdir[:-7] }}/src/proxy/dnscrypt-proxy"
+  shell: "cd /root/{{ dpdir[:-7] }} && ./configure --prefix={{ dnscryptproxy_source_prefix }} {{ configure_args | default('') }} && make -j2 creates=/root/{{ dpdir[:-7] }}/src/proxy/dnscrypt-proxy"
 - name: Install dnscrypt-proxy
   become: yes
-  command: "make install chdir=/root/{{ dpdir[:-7] }} creates=/usr/local/sbin/dnscrypt-proxy"
+  command: "make install chdir=/root/{{ dpdir[:-7] }} creates={{ dnscryptproxy_source_prefix }}/sbin/dnscrypt-proxy"
 
 - set_fact:
     dnscryptproxy_user: _dnscrypt-proxy
@@ -110,7 +110,7 @@
 
 - name: review configuration
   lineinfile:
-    dest: /usr/local/etc/dnscrypt-proxy.conf
+    dest: "{{ dnscryptproxy_source_prefix }}/etc/dnscrypt-proxy.conf"
     regexp: "{{ item.re }}"
     line: "{{ item.l }}"
     insertafter: "{{ item.i }}"
@@ -143,15 +143,9 @@
   when: ansible_service_mgr == 'systemd'
 
 - block:
-    - name: install upstart script
-      template:
-        src: upstart-dnscrypt-proxy.conf
-        dest: /etc/init/dnscrypt-proxy.conf
-        mode: '0644'
-        backup: yes
     - name: enable daemon mode in configuration
       lineinfile:
-        dest: /usr/local/etc/dnscrypt-proxy.conf
+        dest: "{{ dnscryptproxy_source_prefix }}/etc/dnscrypt-proxy.conf"
         regexp: "{{ item.re }}"
         line: "{{ item.rep }}"
         backup: yes
@@ -160,6 +154,24 @@
         - { re: "^LocalAddress .*", rep: "LocalAddress 127.0.0.2:53" }
       notify:
         - restart dnscrypt
+  when: ansible_service_mgr != 'systemd'
+
+- block:
+    - name: install init script
+      template:
+        src: init-dnscrypt-proxy.j2
+        dest: /etc/init.d/dnscrypt-proxy
+        mode: '0755'
+        backup: yes
+  when: ansible_service_mgr != 'systemd' and ansible_distribution_release != 'trusty'
+
+- block:
+    - name: install upstart script
+      template:
+        src: upstart-dnscrypt-proxy.conf.j2
+        dest: /etc/init/dnscrypt-proxy.conf
+        mode: '0644'
+        backup: yes
   when: ansible_distribution_release == 'trusty'
 
 - name: ensure dnscrypt-proxy service is enabled and started.

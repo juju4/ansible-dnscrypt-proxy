@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+prog=dnscrypt-proxy
+exec={{ dnscryptproxy_source_prefix }}/sbin/dnscrypt-proxy
+lockfile=/var/lock/subsys/$prog
+PIDFILE=/var/run/dnscrypt-proxy.pid
+
+start() {
+        [ -x $exec ] || exit 5
+
+        umask 077
+
+        echo -n $"Starting dnscrypt proxy: "
+        daemon --pidfile="$PIDFILE" $exec /usr/local/etc/dnscrypt-proxy.conf
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && touch $lockfile
+        return $RETVAL
+}
+stop() {
+        echo -n $"Shutting down dnscrypt proxy: "
+        killproc -p "$PIDFILE" $exec
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && rm -f $lockfile
+        return $RETVAL
+}
+rhstatus() {
+        status -p "$PIDFILE" -l $prog $exec
+}
+restart() {
+        stop
+        start
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        restart
+        ;;
+  reload)
+        exit 3
+        ;;
+  force-reload)
+        restart
+        ;;
+  status)
+        rhstatus
+        ;;
+  condrestart|try-restart)
+        rhstatus >/dev/null 2>&1 || exit 0
+        restart
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|condrestart|try-restart|reload|force-reload|status}"
+        exit 3
+esac
+
+exit $?
+
