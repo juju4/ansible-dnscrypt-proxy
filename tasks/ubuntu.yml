@@ -12,6 +12,10 @@
 - name: Ubuntu | Extra packages install
   apt: name={{item}} state=present update_cache=yes
   with_items: "{{ dnscrypt_pkg }}"
+## don't start dnscrypt before we refresh resolvers file
+## https://askubuntu.com/questions/74061/install-packages-without-starting-background-processes-and-services
+  environment:
+    RUNLEVEL: 1
 
 ## Exclude if xenial on lxc
 - name: Ubuntu | Extra packages install
@@ -42,6 +46,12 @@
 - name: install dnscrypt configuration
   copy: 'src=dnscrypt-proxy.conf dest=/etc/init/dnscrypt-proxy.conf backup=yes mode=0644'
   notify: restart dnscrypt
+- name: configure target server
+  replace:
+    dest: /etc/default/dnscrypt-proxy
+    regexp: '^DNSCRYPT_PROXY_RESOLVER_NAME=.*'
+    replace: "DNSCRYPT_PROXY_RESOLVER_NAME={{ dnscrypt_proxy_resolver_name161 }}"
+    backup: yes
 - name: add ephemeral-keys to default
   lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^ephemeral-keys" line="ephemeral-keys"'
   notify: restart dnscrypt
@@ -83,7 +93,8 @@
 #    dest: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
 #    mode: '0644'
 #    backup: yes
-  command: "curl -o /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
+#  command: "curl -o /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
+  command: "wget -O /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
   with_items:
     - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv
     - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv.sig

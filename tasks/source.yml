@@ -69,7 +69,8 @@
 #    mode: '0644'
 #    backup: yes 
 ## python certificate/SNI issue
-  command: "curl -o /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
+#  command: "curl -o /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
+  command: "wget -O /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
   with_items:
     - "{{ dnscryptproxy_url }}"
     - "{{ dnscryptproxy_url }}.sig"

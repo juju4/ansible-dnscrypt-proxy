@@ -3,6 +3,10 @@
 ## maybe ovveriden by distribution values (from their packages)
 dnscryptproxy_user: dnscrypt
 
+dnscrypt_proxy_resolver_name: 'random'
+## xenial package, not supporting random
+dnscrypt_proxy_resolver_name161: 'd0wn-us-ns1'
+
 dnscryptproxy_force_source: false
 
 ## if building from source (redhat)
