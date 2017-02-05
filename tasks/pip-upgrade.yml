@@ -1,0 +1,19 @@
+---
+
+## ubuntu xenial: 8.1, trusty: 1.5, centos7:
+## trusty gets:
+## https://github.com/Toblerity/Shapely/issues/305      ImportError: No module named packaging.version
+## https://github.com/pypa/setuptools/issues/937        
+- name: check current pip version
+  shell: 'pip --version | sed "s/pip \(.*\) from .*/\1/"'
+  changed_when: false
+  register: pipv
+
+- debug: var=pipv.stdout
+
+## does not seem to be handled well by ansible pip module
+- name: upgrade pip to latest
+  command: pip install --upgrade pip
+#  when: pipv.stdout.find("9.0.1") == -1
+  when: "{{ pipv.stdout | version_compare( '8.1', '<') }}"
+
