@@ -13,6 +13,7 @@ python_sni:
     - python-dev
     - python-pip
     - libffi-dev
+    - libssl-dev
 
 dnscryptproxy_src_deps:
     - libldns-dev

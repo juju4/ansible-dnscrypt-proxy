@@ -26,7 +26,7 @@ env:
   - distribution: ubuntu
     version: 16.04
     init: /lib/systemd/systemd
-    run_opts: ""
+    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
     ansible_extra_vars: "'-e dnscryptproxy_force_source=true'"
   - distribution: ubuntu
     version: 14.04
