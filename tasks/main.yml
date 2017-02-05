@@ -11,10 +11,10 @@
   when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 - block:
-    - include: pip-upgrade.yml
     - name: ensure python pip is present
       package: name={{ item }} state=present
       with_items: "{{ python_sni }}"
+    - include: pip-upgrade.yml
     - name: old python - SNI workaround
       pip: name={{ item }} state=present
       with_items:
