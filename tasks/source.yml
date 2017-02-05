@@ -75,6 +75,13 @@
   with_items:
     - "{{ dnscryptproxy_url }}"
     - "{{ dnscryptproxy_url }}.sig"
+  when: not (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '6')
+- name: download dnscrypt archive - centos6 wget/Python SNI
+  command: "wget -O /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
+  with_items:
+    - "{{ dnscryptproxy_url }}"
+    - "{{ dnscryptproxy_url }}.sig"
+  when: (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '6')
 - name: recover gpg key
   command: "gpg --keyserver pgp.uni-mainz.de --recv-keys 0x62F25B592B6F76DA"
   register: import
