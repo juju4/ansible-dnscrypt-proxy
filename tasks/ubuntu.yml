@@ -76,6 +76,7 @@
 - command: "ls -la /usr/share/dnscrypt-proxy/"
   register: ls
 - debug: var=ls
+- debug: var=ansible_env
 
 ## Note: without checksum, ansible will not refresh the file... force to delete if say older than...
 - name: check resolver file last modification
@@ -98,6 +99,8 @@
   with_items:
     - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv
     - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv.sig
+  environment:
+    PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 - name: recover gpg key
   command: "gpg --keyserver pgp.uni-mainz.de --recv-keys 0x62F25B592B6F76DA"
   register: import
