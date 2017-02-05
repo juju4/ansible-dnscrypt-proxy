@@ -18,5 +18,5 @@
         - pyopenssl
         - ndg-httpsclient
         - pyasn1
-  when: ansible_distribution_release == 'trusty' or ansible_distribution_major_version <= 7
+  when: ansible_distribution_release == 'trusty' or ansible_distribution_major_version|int <= 7
 
