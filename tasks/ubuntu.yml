@@ -85,18 +85,16 @@
 ## https://github.com/jedisct1/dnscrypt-proxy/issues/270
 ## https://github.com/ansible/ansible/issues/11579#issuecomment-121775819   SNI/different X509v3 SAN DNS...
 - name: update resolvers file
-#  get_url:
-#    url: "{{ item }}"
-#    dest: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
-#    mode: '0644'
-#    backup: yes
+  get_url:
+    url: "{{ item }}"
+    dest: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
+    mode: '0644'
+    backup: yes
 #  command: "curl -o /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
-  command: "wget -O /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
+#  command: "wget -O /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
   with_items:
     - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv
     - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv.sig
-#  environment:
-#    PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 - name: recover gpg key
   command: "gpg --keyserver pgp.uni-mainz.de --recv-keys 0x62F25B592B6F76DA"
   register: import

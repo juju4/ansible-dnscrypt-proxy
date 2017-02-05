@@ -7,10 +7,7 @@
 #      become: yes
 #      become_user: "{{ dnscryptproxy_user }}"
 
-## "msg": "Failed to validate the SSL certificate for download.dnscrypt.org:443. Make sure your managed systems have a valid CA certificate installed. If the website serving the url uses SNI you need python >= 2.7.9 on your managed machine or you can install the `urllib3`, `pyopenssl`, `ndg-httpsclient`, and `pyasn1` python modules to perform SNI verification in python >= 2.6. You can use validate_certs=False if you do not need to confirm the servers identity but this is unsafe and not recommended. Paths checked for this platform: /etc/ssl/certs, /etc/pki/ca-trust/extracted/pem, /etc/pki/tls/certs, /usr/share/ca-certificates/cacert.org, /etc/ansible"
-## = validate_certs=no + checksums
-
-- name: source build dependencies packages install 
+- name: source build dependencies packages install
   package: name={{item}} state=present
   with_items: "{{ dnscryptproxy_src_deps }}"
 
@@ -32,7 +29,11 @@
 #      shell: "dig +short +dnssec TXT {{ dnscryptproxy_libsodium_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
 #      register: dnscryptproxy_libsodium_checksum
     - name: download libsodium archive
-      get_url: url={{ dnscryptproxy_libsodium_url }} dest=/root/{{ dnscryptproxy_libsodium_url | basename }} validate_certs=no checksum=sha256:{{ dnscryptproxy_libsodium_checksum }}
+      get_url:
+        url: "{{ dnscryptproxy_libsodium_url }}"
+        dest: "/root/{{ dnscryptproxy_libsodium_url | basename }}"
+        checksum: "sha256:{{ dnscryptproxy_libsodium_checksum }}"
+#        validate_certs: no
       when: not stlib.stat.exists and not rpmlib.stat.exists
     - set_fact:
         lsdir: "{{ dnscryptproxy_libsodium_url | basename }}"
@@ -63,18 +64,18 @@
 #  when: not stbin.stat.exists
 ###
 - name: download dnscrypt archive
-#  get_url:
-#    url: "{{ item }}"
-#    dest: "/root/{{ item | basename }}"
-#    mode: '0644'
-#    backup: yes 
+  get_url:
+    url: "{{ item }}"
+    dest: "/root/{{ item | basename }}"
+    mode: '0644'
+    backup: yes
 ## python certificate/SNI issue
 #  command: "curl -o /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
-  command: "wget -O /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
+#  command: "wget -O /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
   with_items:
     - "{{ dnscryptproxy_url }}"
     - "{{ dnscryptproxy_url }}.sig"
-- name: recover gpg key 
+- name: recover gpg key
   command: "gpg --keyserver pgp.uni-mainz.de --recv-keys 0x62F25B592B6F76DA"
   register: import
   changed_when: "'imported: 1' in import.stdout"
@@ -104,10 +105,6 @@
 
 - name: ensure log directory exists
   file: path=/var/log/dnscrypt mode=0755 owner={{ dnscryptproxy_user }} state=directory
-
-## for 1.7.0, not needed in 1.9.4/systemd
-#- name: start dnscrypt
-#  command: /usr/local/bin/dnscrypt-proxy-multi.sh
 
 - name: review configuration
   lineinfile:
