@@ -12,6 +12,7 @@ python_sni:
     - python-pip
     - libffi-devel
     - openssl-devel
+    - gcc
 
 dnscryptproxy_src_deps:
     - ldns-devel
