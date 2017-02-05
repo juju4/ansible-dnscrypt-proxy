@@ -13,8 +13,10 @@ python_dev: python-dev
 dnscryptproxy_src_deps:
     - libldns-dev
     - ca-certificates
+    - libffi-dev
+    - wget
 
 dnscryptproxy_src_systemd_deps:
-        - pkg-config
-        - libsystemd-dev
+    - pkg-config
+    - libsystemd-dev
 

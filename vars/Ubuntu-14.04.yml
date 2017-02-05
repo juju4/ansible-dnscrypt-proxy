@@ -6,6 +6,7 @@ dnscryptproxy_user: dnscrypt
 dnscrypt_pkg:
     - apparmor
     - dnscrypt-proxy
+    - libffi-dev
     - ca-certificates
     - wget
 
@@ -13,6 +14,8 @@ python_dev: python-dev
 dnscryptproxy_src_deps:
     - libldns-dev
     - ca-certificates
+    - libffi-dev
+    - wget
 
 dnscryptproxy_src_systemd_deps: []
 
