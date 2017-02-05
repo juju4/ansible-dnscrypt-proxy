@@ -9,7 +9,11 @@ dnscrypt_pkg:
     - ca-certificates
     - wget
 
-python_dev: python-dev
+python_sni:
+    - python-dev
+    - python-pip
+    - libffi-dev
+
 dnscryptproxy_src_deps:
     - libldns-dev
     - ca-certificates

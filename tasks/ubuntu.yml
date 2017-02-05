@@ -73,10 +73,6 @@
 
 - name: ensure target directory exists
   file: dest=/usr/share/dnscrypt-proxy state=directory mode=0755
-- command: "ls -la /usr/share/dnscrypt-proxy/"
-  register: ls
-- debug: var=ls
-- debug: var=ansible_env
 
 ## Note: without checksum, ansible will not refresh the file... force to delete if say older than...
 - name: check resolver file last modification
