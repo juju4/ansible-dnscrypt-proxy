@@ -1,5 +1,9 @@
 ---
 
+- debug: var=ansible_distribution_major_version
+- debug: var=ansible_distribution
+- debug: var=ansible_distribution_release
+- debug: var=ansible_os_family
 - block:
     - name: ensure python pip is present
       package: name={{ item }} state=present
