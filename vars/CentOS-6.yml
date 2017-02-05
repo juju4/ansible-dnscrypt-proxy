@@ -5,6 +5,7 @@ dnscrypt_pkg:
     - bind-utils
     - libselinux-python
     - ca-certificates
+    - wget
 
 python_dev: python-devel
 dnscryptproxy_src_deps:

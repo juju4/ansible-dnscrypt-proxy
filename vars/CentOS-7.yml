@@ -5,6 +5,7 @@ dnscrypt_pkg:
     - libsodium-devel
     - bind-utils
     - ca-certificates
+    - wget
 
 python_dev: python-devel
 dnscryptproxy_src_deps:

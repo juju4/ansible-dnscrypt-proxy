@@ -99,8 +99,8 @@
   with_items:
     - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv
     - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv.sig
-  environment:
-    PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+#  environment:
+#    PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 - name: recover gpg key
   command: "gpg --keyserver pgp.uni-mainz.de --recv-keys 0x62F25B592B6F76DA"
   register: import
