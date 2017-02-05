@@ -84,14 +84,15 @@
   when: "'dnscrypt-resolvers.csv' in findr.stdout"
 ## https://github.com/jedisct1/dnscrypt-proxy/issues/270
 ## https://github.com/ansible/ansible/issues/11579#issuecomment-121775819   SNI/different X509v3 SAN DNS...
+## FIXME! travis/trusty/get_url: failed to create temporary content file: (104, 'ECONNRESET')
 - name: update resolvers file
-  get_url:
-    url: "{{ item }}"
-    dest: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
-    mode: '0644'
-    backup: yes
+#  get_url:
+#    url: "{{ item }}"
+#    dest: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
+#    mode: '0644'
+#    backup: yes
 #  command: "curl -o /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
-#  command: "wget -O /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
+  command: "wget -O /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
   with_items:
     - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv
     - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv.sig
