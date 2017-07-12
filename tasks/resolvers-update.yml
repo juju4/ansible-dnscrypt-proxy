@@ -8,6 +8,7 @@
     dest: /etc/resolv.conf
     remote_src: true
     backup: yes
+  when: (ansible_virtualization_type is defined and ansible_virtualization_type == "lxc")
 
 - name: Ensure directory exists
   file:
@@ -54,4 +55,5 @@
     dest: /etc/resolv.conf
     regexp: '^nameserver .*'
     line: 'nameserver 127.0.2.1'
+  when: (ansible_virtualization_type is defined and ansible_virtualization_type == "lxc")
 
