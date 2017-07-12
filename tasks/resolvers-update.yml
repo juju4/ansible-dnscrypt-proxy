@@ -1,0 +1,57 @@
+---
+
+## before package, because package change resolv.conf immediately
+## and since we can't start if resolvers are not updated...
+- name: Restore prednscrypt resolv.conf
+  copy:
+    src: /etc/resolv.conf.prednscrypt
+    dest: /etc/resolv.conf
+    remote_src: true
+    backup: yes
+
+- name: Ensure directory exists
+  file:
+    dest: /usr/share/dnscrypt-proxy
+    state: directory
+
+## Note: without checksum, ansible will not refresh the file... force to delete if say older than...
+#- name: check resolver file last modification
+#  command: "find /usr/share/dnscrypt-proxy/ -mtime +30"
+#  register: findr
+#  changed_when: false
+
+- name: force resolver file refresh
+  file: dest=/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv state=absent
+#  when: "'dnscrypt-resolvers.csv' in findr.stdout"
+
+## https://github.com/jedisct1/dnscrypt-proxy/issues/270
+## https://github.com/ansible/ansible/issues/11579#issuecomment-121775819   SNI/different X509v3 SAN DNS...
+## FIXME! travis/trusty/get_url: failed to create temporary content file: (104, 'ECONNRESET')
+## FIXME! working fine in travis+docker, but dns fails in jenkins+lxc = resolv.conf switch workaround
+- name: update resolvers file
+#  get_url:
+#    url: "{{ item }}"
+#    dest: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
+#    mode: '0644'
+#    backup: yes
+#  command: "curl -o /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
+  command: "wget -O /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
+  with_items:
+    - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv
+    - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv.sig
+- name: recover gpg key
+  command: "gpg --keyserver pgp.uni-mainz.de --recv-keys 0x62F25B592B6F76DA"
+  register: import
+  changed_when: "'imported: 1' in import.stdout"
+- name: check resolvers file signature
+  command: "gpg --verify /usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv.sig"
+  register: gpgresult
+  changed_when: false
+  failed_when: gpgresult.rc != 0
+
+- name: Restore dnscrypt resolv.conf
+  lineinfile:
+    dest: /etc/resolv.conf
+    regexp: '^nameserver .*'
+    line: 'nameserver 127.0.2.1'
+
