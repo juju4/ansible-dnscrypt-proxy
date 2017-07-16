@@ -179,3 +179,8 @@
         backup: yes
   when: ansible_distribution_release == 'trusty'
 
+## ensure systemd has reload its configuration
+- meta: flush_handlers
+- name: ensure dnscrypt-proxy service is enabled and started.
+  service: name=dnscrypt-proxy state=started enabled=yes
+
