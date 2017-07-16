@@ -27,7 +27,7 @@
     RUNLEVEL: 1
 
 ## Exclude if xenial on lxc
-- name: Ubuntu | Extra packages install
+- name: Ubuntu | rng-tools packages install - not on lxd xenial
   apt: name={{item}} state=present update_cache=yes
   with_items:
     - rng-tools
@@ -42,7 +42,8 @@
 ## https://saintaardvarkthecarpeted.com/blog/archive/2005/08/_etc_ld_so_nohwcap.html
 - stat: path=/etc/ld.so.nohwcap
   register: stld
-- file: path=/etc/ld.so.nohwcap state=touch
+- name: Ensure /etc/ld.so.nohwcap exists
+  file: path=/etc/ld.so.nohwcap state=touch
   when: not stld.stat.exists
 ## pid is written as root
 #    - replace: "dest=/etc/init.d/dnscrypt regexp='{{ item.regexp }}' replace='{{ item.replace }}' backup=yes"
@@ -55,6 +56,10 @@
 - name: install dnscrypt configuration
   copy: 'src=dnscrypt-proxy.conf dest=/etc/init/dnscrypt-proxy.conf backup=yes mode=0644'
   notify: restart dnscrypt
+- name: ensure target server is present in dnscrypt-resolvers.csv
+  command: "grep {{ dnscrypt_proxy_resolver_name161 }} /usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv"
+  register: checkserver
+  changed_when: false
 - name: configure target server
   replace:
     dest: /etc/default/dnscrypt-proxy
@@ -80,8 +85,9 @@
       notify: restart apparmor
   when: armor.stat.exists
 
-- name: ensure target directory exists
+- name: ensure resolvers directory exists
   file: dest=/usr/share/dnscrypt-proxy state=directory mode=0755
 
 - include: resolvers-update.yml
+  when: ansible_distribution_release == 'xenial'
 

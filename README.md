@@ -80,6 +80,32 @@ port tcp/443 and udp/443 should be opened
 http://dns.measurement-factory.com/tools/nagios-plugins/check_zone_rrsig_expiration.html
 http://www.bortzmeyer.org/monitor-dnssec.html
 
+* kitchen verify fails on trusty with anton ppa.
+There is a permission issue. It doesn't seem to be at lxc/apparmor level (same if privileged).
+```
+# strace dnscrypt-proxy
+[...]
+access("/etc/ld.so.nohwcap", F_OK)      = 0
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0P \2\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=1857312, ...}) = 0
+mmap(NULL, 3965632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7ffa9470d000
+mprotect(0x7ffa948cb000, 2097152, PROT_NONE) = 0
+mmap(0x7ffa94acb000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1be000) = 0x7ffa94acb000
+mmap(0x7ffa94ad1000, 17088, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7ffa94ad1000
+close(3)                                = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa94f56000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7ffa94f54000
+arch_prctl(ARCH_SET_FS, 0x7ffa94f54740) = 0
+mprotect(0x7ffa94acb000, 16384, PROT_READ) = 0
+mprotect(0x7ffa94d3c000, 4096, PROT_READ) = 0
+mprotect(0x55d12a2a1000, 4096, PROT_READ) = -1 EACCES (Permission denied)
+writev(2, [{"dnscrypt-proxy", 14}, {": ", 2}, {"error while loading shared libra"..., 36}, {": ", 2}, {"", 0}, {"", 0}, {"cannot apply additional memory p"..., 58}, {": ", 2}, {"Permission denied", 17}, {"\n", 1}], 10) = -1 EACCES (Permission denied)
+exit_group(127)                         = ?
++++ exited with 127 +++
+```
+= Use source install
+
 
 ## License
 

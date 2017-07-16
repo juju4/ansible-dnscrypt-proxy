@@ -36,6 +36,10 @@ suites:
   - name: default
     run_list:
     attributes:
+    includes:
+      - ubuntu-16.04
+      - centos-7
+      - centos-6
   - name: default-source
     run_list:
     includes:
@@ -44,4 +48,3 @@ suites:
     provisioner:
       name: ansible_playbook
       playbook: test/integration/default/source.yml
-
