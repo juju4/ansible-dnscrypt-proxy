@@ -2,5 +2,5 @@
 
 - hosts: all
   roles:
-    - dnscrypt-proxy
+    - juju4.dnscrypt-proxy
 
