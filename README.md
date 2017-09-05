@@ -6,7 +6,7 @@ Ansible role to setup dnscrypt proxy
 Allow to encrypt dns traffic to a central dns server in order to provide better privacy.
 
 Ubuntu install is using 'ppa:anton+/dnscrypt' on Trusty and official package on Xenial, both at 1.6.1
-RedHat install is from source, current latest 1.9.4 (Jan 2017)
+RedHat install is from source, current latest 1.9.5 (Sep 2017)
 
 ## Requirements & Dependencies
 
@@ -15,6 +15,7 @@ It was tested on the following versions:
  * 1.9
  * 2.0
  * 2.2
+ * 2.3
 
 ### Operating systems
 
