@@ -28,7 +28,7 @@
 ## Not possible in docker testing, https://github.com/docker/docker/issues/1297
 - name: enable dnscrypt in resolv.conf
   lineinfile: dest=/etc/resolv.conf line="nameserver 127.0.0.2" insertbefore=BOF backup=yes
-  when: ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker' 
+  when: ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
 
 - name: Ensure nrpe.d dir exists
   file: dest=/etc/nagios/nrpe.d state=directory mode=0755
