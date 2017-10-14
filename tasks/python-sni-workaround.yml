@@ -6,7 +6,14 @@
       with_items: "{{ python_sni }}"
     - include: pip-upgrade.yml
     - name: upgrade python-six to latest with pip - 1.6+ required for ndg-httpsclient
-      pip: name=six version=1.6.0
+      pip:
+        name: six
+        version: 1.6.0
+# 2.1.1: error in cryptography setup command: Invalid environment marker: python_version < '3'
+    - name: use cryptography 2.0.3
+      pip:
+        name: cryptography
+        version: 2.0.3
     - name: old python - SNI workaround
       pip: name={{ item }} state=present
       with_items:
