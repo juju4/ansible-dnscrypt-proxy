@@ -93,6 +93,11 @@
     chdir: "/root/{{ dpdir }}"
     creates: "/root/{{ dpdir }}/src/proxy/dnscrypt-proxy"
   with_items:
+#    - "autoreconf -i --force"
+    - "aclocal"
+    - "autoconf"
+    - "autoheader"
+    - "automake --add-missing"
     - "./configure --prefix={{ dnscryptproxy_source_prefix }} {{ configure_args | default('') }}"
     - "make -j2"
 - name: Install dnscrypt-proxy
