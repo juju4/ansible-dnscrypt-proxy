@@ -13,6 +13,6 @@ dnscryptproxy_force_source: false
 #dnscryptproxy_libsodium_url: 'https://download.libsodium.org/libsodium/releases/libsodium-1.0.13.tar.gz'
 dnscryptproxy_libsodium_url: 'https://github.com/jedisct1/libsodium/releases/download/1.0.13/libsodium-1.0.13.tar.gz'
 dnscryptproxy_libsodium_checksum: '9c13accb1a9e59ab3affde0e60ef9a2149ed4d6e8f99c93c7a5b97499ee323fd'
-dnscryptproxy_url: 'https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-proxy-1.9.5.tar.gz'
+dnscryptproxy_url: 'https://github.com/DNSCrypt/dnscrypt-proxy/archive/a64a9d40fafbaaa28b9e7166a167d036d2e776e9.zip'
+dnscryptproxy_hash: 'sha256:7627694f883603b83ce3bd8f84b77a17d6c7d323e98835168fc16db09168c2e3'
 dnscryptproxy_source_prefix: '/usr/local'
-
