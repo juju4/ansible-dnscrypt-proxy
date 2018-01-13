@@ -3,16 +3,16 @@
 sudo: required
 
 env:
-  - distribution: centos
-    version: 6
-    init: /sbin/init
-    run_opts: ""
-    ansible_extra_vars: ''
-  - distribution: centos
-    version: 7
-    init: /usr/lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    ansible_extra_vars: ''
+#  - distribution: centos
+#    version: 6
+#    init: /sbin/init
+#    run_opts: ""
+#    ansible_extra_vars: ''
+#  - distribution: centos
+#    version: 7
+#    init: /usr/lib/systemd/systemd
+#    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+#    ansible_extra_vars: ''
   - distribution: ubuntu
     version: 16.04
     init: /lib/systemd/systemd
@@ -23,16 +23,16 @@ env:
     init: /sbin/init
     run_opts: ""
     ansible_extra_vars: ''
-  - distribution: ubuntu
-    version: 16.04
-    init: /lib/systemd/systemd
-    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
-    ansible_extra_vars: "'-e dnscryptproxy_force_source=true'"
-  - distribution: ubuntu
-    version: 14.04
-    init: /sbin/init
-    run_opts: ""
-    ansible_extra_vars: "'-e dnscryptproxy_force_source=true'"
+#  - distribution: ubuntu
+#    version: 16.04
+#    init: /lib/systemd/systemd
+#    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+#    ansible_extra_vars: "'-e dnscryptproxy_force_source=true'"
+#  - distribution: ubuntu
+#    version: 14.04
+#    init: /sbin/init
+#    run_opts: ""
+#    ansible_extra_vars: "'-e dnscryptproxy_force_source=true'"
 ## "Tag 12.04 not found in repository docker.io/library/ubuntu"
 #  - distribution: ubuntu
 #    version: 12.04
