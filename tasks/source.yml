@@ -81,12 +81,12 @@
 - name: decompress archive
   unarchive: src=/root/{{ dnscryptproxy_url | basename }} dest=/root/ copy=no
 - set_fact:
-    dpdir: "{{ dnscryptproxy_url | basename }}"
+    dpdir: "dnscrypt-proxy-{{ dnscryptproxy_url | basename }}"
 - name: Build dnscrypt-proxy
-  shell: "cd /root/{{ dpdir[:-7] }} && ./configure --prefix={{ dnscryptproxy_source_prefix }} {{ configure_args | default('') }} && make -j2 creates=/root/{{ dpdir[:-7] }}/src/proxy/dnscrypt-proxy"
+  shell: "cd /root/{{ dpdir }} && ./configure --prefix={{ dnscryptproxy_source_prefix }} {{ configure_args | default('') }} && make -j2 creates=/root/{{ dpdir }}/src/proxy/dnscrypt-proxy"
 - name: Install dnscrypt-proxy
   become: yes
-  command: "make install chdir=/root/{{ dpdir[:-7] }} creates={{ dnscryptproxy_source_prefix }}/sbin/dnscrypt-proxy"
+  command: "make install chdir=/root/{{ dpdir }} creates={{ dnscryptproxy_source_prefix }}/sbin/dnscrypt-proxy"
 
 - set_fact:
     dnscryptproxy_user: _dnscrypt-proxy
@@ -114,7 +114,7 @@
 - block:
     - name: ensure dnscrypt-proxy systemd service file is present
       copy:
-        src: "/root/{{ dpdir[:-7] }}/{{ item }}"
+        src: "/root/{{ dpdir }}/{{ item }}"
         dest: "/lib/systemd/system/{{ item }}"
         mode: '0644'
         backup: yes
