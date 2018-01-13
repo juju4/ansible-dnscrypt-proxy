@@ -38,8 +38,8 @@
 #  command: "curl -o /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
   command: "wget -O /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
   with_items:
-    - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv
-    - https://download.dnscrypt.org/dnscrypt-proxy/dnscrypt-resolvers.csv.sig
+    - https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v1/dnscrypt-resolvers.csv
+    - https://github.com/DNSCrypt/dnscrypt-resolvers/raw/master/v1/dnscrypt-resolvers.csv.sig
 - name: recover gpg key
   command: "gpg --keyserver pgp.uni-mainz.de --recv-keys 0x62F25B592B6F76DA"
   register: import
