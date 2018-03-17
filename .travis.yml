@@ -18,11 +18,13 @@ env:
     init: /lib/systemd/systemd
     run_opts: ""
     ansible_extra_vars: ''
+    suite: default
   - distribution: ubuntu
     version: 14.04
     init: /sbin/init
     run_opts: ""
     ansible_extra_vars: ''
+    suite: default
 #  - distribution: ubuntu
 #    version: 16.04
 #    init: /lib/systemd/systemd
@@ -42,6 +44,18 @@ env:
 #    version: 3.4
 #    init: /sbin/init
 #    run_opts: ""
+  - distribution: ubuntu
+    version: 16.04
+    init: /lib/systemd/systemd
+    run_opts: ""
+    ansible_extra_vars: ''
+    suite: default-v1
+  - distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+    run_opts: ""
+    ansible_extra_vars: ''
+    suite: default-v1
 
 services:
   - docker

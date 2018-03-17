@@ -40,6 +40,9 @@ suites:
       - ubuntu-16.04
       - centos-7
       - centos-6
+  - name: default-v1
+    run_list:
+    attributes:
   - name: default-source
     run_list:
     includes:

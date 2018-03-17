@@ -29,6 +29,10 @@ suites:
       name: ansible_playbook
       hosts: test-kitchen
 
+  - name: default-v1
+    run_list:
+    attributes:
+
   - name: dnscrypt-unbound
     run_list:
     attributes:
