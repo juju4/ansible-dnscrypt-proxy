@@ -89,5 +89,5 @@
   file: dest=/usr/share/dnscrypt-proxy state=directory mode=0755
 
 - include: resolvers-update.yml
-  when: ansible_distribution_release == 'xenial'
+  when: ansible_distribution_release == 'xenial' and dnscrypt_resolvers_update
 

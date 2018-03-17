@@ -8,6 +8,7 @@ dnscrypt_proxy_resolver_name: 'random'
 dnscrypt_proxy_resolver_name161: 'cs-uswest2'
 
 dnscryptproxy_force_source: false
+dnscrypt_resolvers_update: false
 
 ## if building from source (redhat)
 dnscryptproxy_libsodium_url: 'https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz'
