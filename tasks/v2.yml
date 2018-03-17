@@ -19,13 +19,37 @@
     src: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
     dest: /opt/dnscrypt-proxy2
     copy: no
+    creates: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy
+
+- name: Check if existing config
+  stat:
+    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+  register: cfg
+
+- name: Initiate config
+  copy:
+    src: /opt/dnscrypt-proxy2/linux-x86_64/example-dnscrypt-proxy.toml
+    dest: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    mode: '0644'
+  when: not cfg.stat.exists
+
+- name: Configure listen address
+  ini_file:
+    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    section: null
+    option: listen_addresses
+    value: "{{ dnscryptproxyv2_listen }}"
+    mode: '0644'
+    backup: yes
 
 - name: Install dnscrypt-proxy2 service
   command: ./dnscrypt-proxy -service install
   args:
-    chdir: /opt/dnscrypt-proxy2
+    chdir: /opt/dnscrypt-proxy2/linux-x86_64
+    creates: /etc/init.d/dnscrypt-proxy
 
 - name: Start dnscrypt-proxy2 service
   command: ./dnscrypt-proxy -service start
   args:
-    chdir: /opt/dnscrypt-proxy2
+    chdir: /opt/dnscrypt-proxy2/linux-x86_64
+#  when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
