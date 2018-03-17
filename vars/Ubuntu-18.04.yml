@@ -1,0 +1,26 @@
+---
+
+## from package
+dnscryptproxy_user: _dnscrypt-proxy
+
+dnscrypt_pkg:
+    - apparmor
+    - dnscrypt-proxy
+    - ca-certificates
+    - wget
+
+python_sni:
+    - python-dev
+    - python-pip
+    - libffi-dev
+    - libssl-dev
+
+dnscryptproxy_src_deps:
+    - libldns-dev
+    - ca-certificates
+    - wget
+
+dnscryptproxy_src_systemd_deps:
+    - pkg-config
+    - libsystemd-dev
+
