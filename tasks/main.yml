@@ -10,20 +10,25 @@
   include_vars: "CentOS-{{ ansible_distribution_version.split('.')[0] }}.yml"
   when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- include: python-sni-workaround.yml
+- block:
+    - include: python-sni-workaround.yml
 
-- name: Ubuntu | ppa install
-  include: ubuntu.yml
-  when: ansible_distribution == 'Ubuntu' and not dnscryptproxy_force_source
+    - name: Ubuntu | ppa install
+      include: ubuntu.yml
+      when: ansible_distribution == 'Ubuntu' and not dnscryptproxy_force_source
 
-- name: Redhat | requirements
-  include: redhat.yml
-  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+    - name: Redhat | requirements
+      include: redhat.yml
+      when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: Source install
-  include: source.yml
-#  when: ansible_distribution != 'Ubuntu'
-  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or dnscryptproxy_force_source
+    - name: Source install
+      include: source.yml
+    #  when: ansible_distribution != 'Ubuntu'
+      when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or dnscryptproxy_force_source
+  when: dnscryptproxy_v == '1'
+
+- include: v2.yml
+  when: dnscryptproxy_v == '2'
 
 ## Not possible in docker testing, https://github.com/docker/docker/issues/1297
 - name: enable dnscrypt in resolv.conf

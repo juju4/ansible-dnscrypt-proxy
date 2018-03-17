@@ -1,5 +1,8 @@
 ---
 
+dnscryptproxy_v: 2
+#dnscryptproxy_v: 1
+
 ## maybe ovveriden by distribution values (from their packages)
 dnscryptproxy_user: dnscrypt
 
@@ -16,3 +19,5 @@ dnscryptproxy_libsodium_checksum: 'eeadc7e1e1bcef09680fb4837d448fbdf57224978f865
 dnscryptproxy_url: 'https://github.com/DNSCrypt/dnscrypt-proxy/archive/a64a9d40fafbaaa28b9e7166a167d036d2e776e9.zip'
 dnscryptproxy_hash: 'sha256:7627694f883603b83ce3bd8f84b77a17d6c7d323e98835168fc16db09168c2e3'
 dnscryptproxy_source_prefix: '/usr/local'
+dnscryptproxyv2_url: 'https://github.com/jedisct1/dnscrypt-proxy/releases/download/2.0.6/dnscrypt-proxy-linux_x86_64-2.0.6.tar.gz'
+dnscryptproxyv2_hash: 'sha256:446af1b89870016c19c8d460ea4d3d71dfad6efe59f29855b1cdbdec405af11f'

@@ -1,0 +1,31 @@
+---
+
+- name: download dnscrypt v2
+  get_url:
+    url: "{{ dnscryptproxyv2_url}}"
+    dest: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
+    mode: '0644'
+    checksum: "{{ dnscryptproxyv2_hash }}"
+    backup: yes
+
+- name: Ensure /opt/dnscrypt-proxy2 exists
+  file:
+    dest: /opt/dnscrypt-proxy2
+    state: directory
+    mode: '0755'
+
+- name: decompress archive
+  unarchive:
+    src: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
+    dest: /opt/dnscrypt-proxy2
+    copy: no
+
+- name: Install dnscrypt-proxy2 service
+  command: ./dnscrypt-proxy -service install
+  args:
+    chdir: /opt/dnscrypt-proxy2
+
+- name: Start dnscrypt-proxy2 service
+  command: ./dnscrypt-proxy -service start
+  args:
+    chdir: /opt/dnscrypt-proxy2
