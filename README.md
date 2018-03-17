@@ -60,7 +60,11 @@ as described in https://github.com/jedisct1/dnscrypt-proxy/issues/161
 you can test this role with test kitchen.
 In the role folder, run
 ```
+$ gem install kitchen-ansible kitchen-lxd_cli kitchen-sync kitchen-vagrant
+$ cd /path/to/roles/juju4.dnscrypt-proxy
 $ kitchen verify
+$ kitchen login
+$ KITCHEN_YAML=".kitchen.vagrant.yml" kitchen verify
 ```
 
 Known bugs
