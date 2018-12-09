@@ -41,4 +41,3 @@
 #      when: ansible_os_family == "Debian"
 
   when: pipv.stdout|int is version_compare( '8.1', '<')
-

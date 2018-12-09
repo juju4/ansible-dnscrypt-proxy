@@ -19,7 +19,7 @@
 ## FIXME! xenial: dmesg: read kernel buffer failed: Operation not permitted
 ## FIXME! ansible v2.2, https://github.com/ansible/ansible-modules-core/issues/5459
 - name: Ubuntu | Extra packages install
-  apt: name={{item}} state=present update_cache=yes
+  apt: name={{ item }} state=present update_cache=yes
   with_items: "{{ dnscrypt_pkg }}"
 ## don't start dnscrypt before we refresh resolvers file
 ## https://askubuntu.com/questions/74061/install-packages-without-starting-background-processes-and-services
@@ -48,7 +48,8 @@
     - /var/log/dnscrypt
 #        - /run/dnscrypt
 ## https://saintaardvarkthecarpeted.com/blog/archive/2005/08/_etc_ld_so_nohwcap.html
-- stat: path=/etc/ld.so.nohwcap
+- name: Check if /etc/ld.so.nohwcap exists
+  stat: path=/etc/ld.so.nohwcap
   register: stld
 - name: Ensure /etc/ld.so.nohwcap exists
   file: path=/etc/ld.so.nohwcap state=touch

@@ -11,4 +11,7 @@
   command: ldconfig
 
 - name: reload systemd
-  command: "systemctl daemon-reload"
+  systemd:
+    daemon_reload: yes
+  when: >
+    not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
