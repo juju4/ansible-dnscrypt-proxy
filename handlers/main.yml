@@ -1,9 +1,4 @@
 ---
-## strange behavior in docker so disabled at least temporary
-#RUNNING HANDLER [dnscrypt-proxy : restart dnscrypt] ****************************
-#fatal: [localhost]: FAILED! => {"changed": false, "failed": true, "msg": "failure 1 running systemctl show for 'dnscrypt-proxy': Failed to connect to bus: No such file or directory\n"}
-#RUNNING HANDLER [dnscrypt-proxy : restart apparmor] ****************************
-#fatal: [localhost]: FAILED! => {"changed": false, "failed": true, "msg": "All profile caches have been cleared, but no profiles have been unloaded.\nUnloading profiles will leave already running processes permanently\nunconfined, which can lead to unexpected situations.\n\nTo set a process to complain mode, use the command line tool\n'aa-complain'. To really tear down all profiles, run the init script\nwith the 'teardown' option.\"\nmount: permission denied\n"}
 
 - name: restart dnscrypt
   service: name=dnscrypt-proxy state=restarted
@@ -17,4 +12,3 @@
 
 - name: reload systemd
   command: "systemctl daemon-reload"
-

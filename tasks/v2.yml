@@ -2,7 +2,7 @@
 
 - name: download dnscrypt v2
   get_url:
-    url: "{{ dnscryptproxyv2_url}}"
+    url: "{{ dnscryptproxyv2_url }}"
     dest: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
     mode: '0644'
     checksum: "{{ dnscryptproxyv2_hash }}"

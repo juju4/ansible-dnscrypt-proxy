@@ -8,7 +8,7 @@
   when: ansible_distribution == 'Ubuntu'
 - name: Include version-specific variables for RedHat
   include_vars: "CentOS-{{ ansible_distribution_version.split('.')[0] }}.yml"
-  when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_os_family == "RedHat"
 
 - debug: var=dnscryptproxy_v
 
@@ -21,12 +21,12 @@
 
     - name: Redhat | requirements
       include: redhat.yml
-      when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+      when: ansible_os_family == "RedHat"
 
     - name: Source install
       include: source.yml
     #  when: ansible_distribution != 'Ubuntu'
-      when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or dnscryptproxy_force_source
+      when: ansible_os_family == "RedHat"
   when: dnscryptproxy_v|int == 1
 
 - include: v2.yml

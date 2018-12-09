@@ -20,4 +20,3 @@ dnscryptproxy_src_deps:
     - ca-certificates
 
 dnscryptproxy_src_systemd_deps: []
-

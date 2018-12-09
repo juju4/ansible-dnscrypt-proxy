@@ -35,8 +35,9 @@
 #    dest: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
 #    mode: '0644'
 #    backup: yes
-#  command: "curl -o /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
-  command: "wget -O /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }} creates=/usr/share/dnscrypt-proxy/{{ item | basename }}"
+  command: "wget -O /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }}"
+  args:
+    creates: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
   with_items:
     - https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v1/dnscrypt-resolvers.csv
     - https://github.com/DNSCrypt/dnscrypt-resolvers/raw/master/v1/dnscrypt-resolvers.csv.sig
@@ -56,4 +57,3 @@
     regexp: '^nameserver .*'
     line: 'nameserver 127.0.2.1'
   when: (ansible_virtualization_type is defined and ansible_virtualization_type == "lxc")
-

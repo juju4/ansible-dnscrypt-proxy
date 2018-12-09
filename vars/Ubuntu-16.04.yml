@@ -23,4 +23,3 @@ dnscryptproxy_src_deps:
 dnscryptproxy_src_systemd_deps:
     - pkg-config
     - libsystemd-dev
-

@@ -21,4 +21,3 @@ dnscryptproxy_src_deps:
     - wget
 
 dnscryptproxy_src_systemd_deps: []
-

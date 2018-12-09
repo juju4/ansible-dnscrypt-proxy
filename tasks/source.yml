@@ -15,19 +15,18 @@
     - name: source build dependencies packages install with systemd
       package: name={{item}} state=present
       with_items: "{{ dnscryptproxy_src_systemd_deps }}"
-    - set_fact:
+    - name: Set fact configure_args
+      set_fact:
         configure_args: "--with-systemd"
   when: ansible_service_mgr == 'systemd'
 
-- stat: path=/usr/lib64/libsodium.so.13
+- name: Check if /usr/lib64/libsodium.so.13 exists
+  stat: path=/usr/lib64/libsodium.so.13
   register: rpmlib
-- stat: path=/usr/local/lib/libsodium.so
+- name: Check if /usr/local/lib/libsodium.so exists
+  stat: path=/usr/local/lib/libsodium.so
   register: stlib
 - block:
-    ## note certificate switched to let's encrypt
-#    - name: get archive checksum
-#      shell: "dig +short +dnssec TXT {{ dnscryptproxy_libsodium_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
-#      register: dnscryptproxy_libsodium_checksum
     - name: download libsodium archive
       get_url:
         url: "{{ dnscryptproxy_libsodium_url }}"
@@ -35,12 +34,15 @@
         checksum: "sha256:{{ dnscryptproxy_libsodium_checksum }}"
 #        validate_certs: no
       when: not stlib.stat.exists and not rpmlib.stat.exists
-    - set_fact:
+    - name: Set fact lsdir
+      set_fact:
         lsdir: "{{ dnscryptproxy_libsodium_url | basename }}"
     - name: decompress archive
       unarchive: src=/root/{{ dnscryptproxy_libsodium_url | basename }} dest=/root/ copy=no
     - name: Build libsodium
-      shell: "cd /root/{{ lsdir[:-7] }} && ./configure --prefix={{ dnscryptproxy_source_prefix }} && make -j2"
+      shell: "./configure --prefix={{ dnscryptproxy_source_prefix }} && make -j2"
+      args:
+        chdir: "/root/{{ lsdir[:-7] }}"
       notify:
         - ldconfig
       when: not stlib.stat.exists and not rpmlib.stat.exists
@@ -52,17 +54,6 @@
       command: ldconfig
   when: not stlib.stat.exists and not rpmlib.stat.exists
 
-### Not available anymore since 1.8.0
-#- stat: path=/usr/local/sbin/dnscrypt-proxy
-#  register: stbin
-#- name: get archive checksum
-#  shell: "dig +short +dnssec TXT {{ dnscryptproxy_url | basename }}.download.dnscrypt.org | sed '1s/\"//g;2d'"
-#  register: dnscryptproxy_checksum
-#- debug: var=dnscryptproxy_checksum
-#- name: download archive
-#  get_url: url={{ dnscryptproxy_url }} dest=/root/{{ dnscryptproxy_url | basename }} mode=0440 validate_certs=no checksum=sha256:{{ dnscryptproxy_checksum.stdout }}
-#  when: not stbin.stat.exists
-###
 - name: download dnscrypt archive
   get_url:
     url: "{{ dnscryptproxy_url}}"
@@ -85,7 +76,8 @@
 
 - name: decompress archive
   unarchive: src=/root/{{ dnscryptproxy_url | basename }} dest=/root/ copy=no
-- set_fact:
+- name: Set fact dpdir
+  set_fact:
     dpdir: "dnscrypt-proxy-{{ dnscryptproxy_url | basename | regex_replace('.zip$', '') }}"
 - name: Build dnscrypt-proxy
   shell: "{{ item }}"
@@ -107,7 +99,8 @@
     chdir: "/root/{{ dpdir }}"
     creates: "{{ dnscryptproxy_source_prefix }}/sbin/dnscrypt-proxy"
 
-- set_fact:
+- name: Set fact dnscryptproxy_user
+  set_fact:
     dnscryptproxy_user: _dnscrypt-proxy
 - name: create dnscrypt user '{{ dnscryptproxy_user }}'
   user: name={{ dnscryptproxy_user }} comment="dnscrypt user" system=yes
@@ -188,4 +181,3 @@
 - meta: flush_handlers
 - name: ensure dnscrypt-proxy service is enabled and started.
   service: name=dnscrypt-proxy state=started enabled=yes
-

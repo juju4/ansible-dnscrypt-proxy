@@ -13,7 +13,6 @@ provisioner:
   ansible_verbose: false
   ansible_verbosity: 3
   ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
-#  ansible_yum_repo: http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
   require_ansible_omnibus: true
 #  require_chef_for_busser: false
   enable_yum_epel: true
@@ -27,7 +26,8 @@ platforms:
 #  - name: ubuntu-12.04
   - name: centos-7
   - name: centos-6
-## FIXME! workaround Ansible 2.2+/cryptography: https://github.com/ansible/ansible/issues/276 no attribute 'HAVE_DECL_MPZ_POWM_SEC'
+## FIXME! workaround Ansible 2.2+/cryptography:
+##  https://github.com/ansible/ansible/issues/276 no attribute 'HAVE_DECL_MPZ_POWM_SEC'
     provisioner:
 ## Desired version, only affects apt-get installs
       ansible_version: 2.1.2.0
