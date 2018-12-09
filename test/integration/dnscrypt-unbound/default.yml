@@ -5,12 +5,15 @@
     - local_dns_resolvconf: 127.0.0.1
     - unbound_forward_zone: { 127.0.0.2@53 }
   roles:
-    - juju4.dnscrypt-proxy
+    - juju4.dnscryptproxy
     - jdauphant.unbound
   tasks:
 ## Debian/Ubuntu bug: using only dnscrypt
     - name: Debian | Configure resolvconf
-      lineinfile: "dest=/etc/resolvconf/resolv.conf.d/base regexp=^nameserver line='nameserver {{ local_dns_resolvconf }}'"
+      lineinfile:
+        dest: /etc/resolvconf/resolv.conf.d/base
+        regexp: ^nameserver
+        line: 'nameserver {{ local_dns_resolvconf }}'
       become: yes
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
     - name: Debian | Update resolvconf
@@ -19,8 +22,15 @@
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 ## Redhat/Centos: chain unbound+dnscrypt
     - name: Redhat | Update NetworkManager DNS config
-      lineinfile: "dest=/etc/sysconfig/network-scripts/ifcfg-{{ ansible_default_ipv4.interface }} regexp=^DNS1={{ local_dns_resolvconf }} line=DNS1={{ local_dns_resolvconf }} backup=yes"
-      when: ansible_os_family == "RedHat" or ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+      lineinfile:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ ansible_default_ipv4.interface }}"
+        regexp: "^DNS1={{ local_dns_resolvconf }}"
+        line: "DNS1={{ local_dns_resolvconf }}"
+        backup: yes
+      when: ansible_os_family == "RedHat"
     - name: Redhat | Update current resolv.conf
-      lineinfile: "dest=/etc/resolv.conf regexp=^nameserver line='nameserver {{ local_dns_resolvconf }}' backup=yes"
-
+      lineinfile:
+        dest: /etc/resolv.conf
+        regexp: ^nameserver
+        line: "nameserver {{ local_dns_resolvconf }}"
+        backup: yes

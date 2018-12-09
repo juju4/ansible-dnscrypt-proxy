@@ -4,5 +4,4 @@
   vars:
     - dnscryptproxy_v: '1'
   roles:
-    - juju4.dnscrypt-proxy
-
+    - juju4.dnscryptproxy
