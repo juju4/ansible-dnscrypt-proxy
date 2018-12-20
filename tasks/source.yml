@@ -8,13 +8,15 @@
 #      become_user: "{{ dnscryptproxy_user }}"
 
 - name: source build dependencies packages install
-  package: name={{ item }} state=present
-  with_items: "{{ dnscryptproxy_src_deps }}"
+  package: name={{ dnscryptproxy_src_deps }} state=present
+  register: pkg_result
+  until: pkg_result is success
 
 - block:
     - name: source build dependencies packages install with systemd
-      package: name={{ item }} state=present
-      with_items: "{{ dnscryptproxy_src_systemd_deps }}"
+      package: name={{ dnscryptproxy_src_systemd_deps }} state=present
+      register: pkg_result
+      until: pkg_result is success
     - name: Set fact configure_args
       set_fact:
         configure_args: "--with-systemd"
@@ -73,6 +75,8 @@
   package:
     name: unzip
     state: present
+  register: pkg_result
+  until: pkg_result is success
 
 - name: decompress archive
   unarchive: src=/root/{{ dnscryptproxy_url | basename }} dest=/root/ copy=no

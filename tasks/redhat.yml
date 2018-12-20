@@ -2,12 +2,16 @@
 
 - name: install the 'Development tools' package group
   yum: name="@Development tools" state=present
+  register: pkg_result
+  until: pkg_result is success
 
 - name: yum | install libsodium
   yum:
     name: "{{ item }}"
     state: present
   with_items: "{{ dnscrypt_pkg }}"
+  register: pkg_result
+  until: pkg_result is success
 
 - name: update ldconfig path search
   lineinfile:

@@ -19,22 +19,23 @@
 ## FIXME! xenial: dmesg: read kernel buffer failed: Operation not permitted
 ## FIXME! ansible v2.2, https://github.com/ansible/ansible-modules-core/issues/5459
 - name: Ubuntu | Extra packages install
-  apt: name={{ item }} state=present update_cache=yes
-  with_items: "{{ dnscrypt_pkg }}"
+  apt: name={{ dnscrypt_pkg }} state=present update_cache=yes
 ## don't start dnscrypt before we refresh resolvers file
 ## https://askubuntu.com/questions/74061/install-packages-without-starting-background-processes-and-services
   environment:
     RUNLEVEL: 1
+  register: pkg_result
+  until: pkg_result is success
 
 ## Exclude if xenial on lxc
 - name: Ubuntu | rng-tools packages install - not on lxd xenial
-  apt: name={{ item }} state=present update_cache=yes
-  with_items:
-    - rng-tools
+  apt: name=rng-tools state=present update_cache=yes
   when: >
     ansible_distribution == 'Debian' and
     (ansible_distribution == 'Ubuntu' and ansible_lsb.major_release|int < 16) and
     (ansible_virtualization_type is not defined or ansible_virtualization_type != "lxc")
+  register: pkg_result
+  until: pkg_result is success
 
 # dnscrypt/switch resolv.conf to 127.0.0.2:53 with ppa
 - name: Creates dnscrypt chroot directory
@@ -76,7 +77,7 @@
   replace:
     dest: /etc/default/dnscrypt-proxy
     regexp: '^DNSCRYPT_PROXY_RESOLVER_NAME=.*'
-    replace: "DNSCRYPT_PROXY_RESOLVER_NAME={{ dnscrypt_proxy_resolver_name161 }}"
+    replace: "DNSCRYPT_PROXY_RESOLVER_NAME={{ dnscrypt_proxy_resolver_name161 }}"
     backup: yes
 - name: add ephemeral-keys to default
   lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^ephemeral-keys" line="ephemeral-keys"'

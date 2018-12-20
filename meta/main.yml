@@ -1,6 +1,6 @@
 ---
 galaxy_info:
-  role_name: dnscrypt-proxy
+  role_name: dnscryptproxy
   author: juju4
   description: setup dnscrypt proxy
   license: BSD
