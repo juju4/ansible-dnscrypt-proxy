@@ -6,6 +6,8 @@
 - name: add dnscrypt ppa
   apt_repository: repo='ppa:anton+/dnscrypt'
   when: ansible_distribution_release == 'trusty'
+  register: aptr_result
+  until: aptr_result is success
 
 - name: Ensure we have a resolv.conf backup
   stat: path=/etc/resolv.conf.prednscrypt
