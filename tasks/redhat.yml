@@ -7,9 +7,8 @@
 
 - name: yum | install libsodium
   yum:
-    name: "{{ item }}"
+    name: "{{ dnscrypt_pkg }}"
     state: present
-  with_items: "{{ dnscrypt_pkg }}"
   register: pkg_result
   until: pkg_result is success
 

@@ -2,8 +2,9 @@
 
 - block:
     - name: ensure python pip is present
-      package: name={{ item }} state=present
-      with_items: "{{ python_sni }}"
+      package:
+        name: "{{ python_sni }}"
+        state: present
       register: pkg_result
       until: pkg_result is success
     - include: pip-upgrade.yml
@@ -25,11 +26,12 @@
       until: pkg_result is success
 
     - name: old python - SNI workaround
-      pip: name={{ item }} state=present
-      with_items:
-        - urllib3
-        - ndg-httpsclient
-        - pyasn1
+      pip:
+        name:
+          - urllib3
+          - ndg-httpsclient
+          - pyasn1
+        state: present
       register: pkg_result
       until: pkg_result is success
   when: ansible_distribution_release == 'trusty' or ansible_distribution_major_version|int <= 6
