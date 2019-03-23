@@ -2,8 +2,8 @@
 
 dnscryptproxy_v: 2
 
-dnscryptproxyv2_url: 'https://github.com/jedisct1/dnscrypt-proxy/releases/download/2.0.6/dnscrypt-proxy-linux_x86_64-2.0.6.tar.gz'
-dnscryptproxyv2_hash: 'sha256:446af1b89870016c19c8d460ea4d3d71dfad6efe59f29855b1cdbdec405af11f'
+dnscryptproxyv2_url: 'https://github.com/jedisct1/dnscrypt-proxy/releases/download/2.0.21/dnscrypt-proxy-linux_x86_64-2.0.21.tar.gz'
+dnscryptproxyv2_hash: 'sha256:43e7229e4a1dbb49afe21079e5e724f1481d1255f4be4e081cb24aecaa53fe11'
 #dnscryptproxyv2_listen: "['127.0.0.1:53', '[::1]:53']"
 dnscryptproxyv2_listen: "['127.0.0.2:53']"
 
@@ -20,8 +20,8 @@ dnscryptproxy_force_source: false
 dnscrypt_resolvers_update: false
 
 ## if building from source (redhat)
-dnscryptproxy_libsodium_url: 'https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz'
-dnscryptproxy_libsodium_checksum: 'eeadc7e1e1bcef09680fb4837d448fbdf57224978f865ac1c16745868fbd0533'
+dnscryptproxy_libsodium_url: 'https://github.com/jedisct1/libsodium/releases/download/1.0.17/libsodium-1.0.17.tar.gz'
+dnscryptproxy_libsodium_checksum: '0cc3dae33e642cc187b5ceb467e0ad0e1b51dcba577de1190e9ffa17766ac2b1'
 dnscryptproxy_url: 'https://github.com/DNSCrypt/dnscrypt-proxy/archive/a64a9d40fafbaaa28b9e7166a167d036d2e776e9.zip'
 dnscryptproxy_hash: 'sha256:7627694f883603b83ce3bd8f84b77a17d6c7d323e98835168fc16db09168c2e3'
 dnscryptproxy_source_prefix: '/usr/local'
