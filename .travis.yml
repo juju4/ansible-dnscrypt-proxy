@@ -51,6 +51,12 @@ env:
 #    init: /sbin/init
 #    run_opts: ""
   - distribution: ubuntu
+    version: 18.04
+    init: /lib/systemd/systemd
+    run_opts: ""
+    ansible_extra_vars: ''
+    suite: default-blacklist
+  - distribution: ubuntu
     version: 16.04
     init: /lib/systemd/systemd
     run_opts: ""

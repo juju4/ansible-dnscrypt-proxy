@@ -2,6 +2,6 @@
 
 - hosts: all
   vars:
-    - dnscrypt_proxy_blacklist: ''
+    - dnscryptproxy_force_source: true
   roles:
     - juju4.dnscryptproxy
