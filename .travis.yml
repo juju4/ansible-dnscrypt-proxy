@@ -103,6 +103,7 @@ script:
 #  - 'sudo docker exec --tty "$(cat ${container_id})" /etc/ansible/roles/juju4.dnscryptproxy/test/integration/default/serverspec/run-local-tests.sh'
 
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ps axu'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm cat /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml'
 
 after_script:
   # Clean up
