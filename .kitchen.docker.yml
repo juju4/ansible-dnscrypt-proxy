@@ -44,6 +44,7 @@ suites:
     includes:
       - centos-7
       - ubuntu-18.04
+      - ubuntu-16.04
   - name: default-v1
     run_list:
     attributes:
