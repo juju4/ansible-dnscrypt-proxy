@@ -102,10 +102,10 @@ script:
   # serverspec tests: NOK, not updating /etc/resolv.conf in docker
 #  - 'sudo docker exec --tty "$(cat ${container_id})" /etc/ansible/roles/juju4.dnscryptproxy/test/integration/default/serverspec/run-local-tests.sh'
 
+after_script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ps axu'
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm cat /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml'
 
-after_script:
   # Clean up
   - 'sudo docker stop "$(cat ${container_id})"'
 
