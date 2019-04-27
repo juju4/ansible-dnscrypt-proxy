@@ -40,3 +40,16 @@
       curl -O {{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}
         {{ dnscrypt_proxy_blacklist }}
     cron_file: ansible_dnscrypt-proxy2_blacklist
+
+- name: Check if blacklist file
+  stat:
+    path: "{{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}"
+  register: blacklistf
+
+- name: Ensure initial blacklist exists
+  get_url:
+    url: "{{ dnscrypt_proxy_blacklist }}"
+    dest: "{{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}"
+    owner: nobody
+    mode: '0644'
+  when: not blacklistf.stat.exists
