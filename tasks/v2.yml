@@ -42,6 +42,9 @@
     mode: '0644'
     backup: yes
 
+- include: v2-blacklist.yml
+  when: dnscrypt_proxy_blacklist
+
 - name: Install dnscrypt-proxy2 service
   command: ./dnscrypt-proxy -service install
   args:

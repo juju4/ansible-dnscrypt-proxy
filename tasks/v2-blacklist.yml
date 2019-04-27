@@ -1,0 +1,42 @@
+---
+
+- name: Configure blacklist
+  ini_file:
+    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    section: blacklist
+    option: dnscrypt_proxy_blacklist
+    value: "{{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}"
+    mode: '0644'
+    backup: yes
+
+- name: Configure blacklist logging
+  ini_file:
+    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    section: blacklist
+    option: log_file
+    value: "{{ dnscrypt_proxy_blacklist_logpath | default(omit) }}"
+    mode: '0644'
+    backup: yes
+
+- name: Ensure blacklist cache directory exists
+  file:
+    dest: "{{ dnscrypt_proxy_blacklist_path }}"
+    state: directory
+    mode: '0755'
+    owner: nobody
+
+- name: Ensure curl package is present for cron
+  package:
+    name: cron
+    state: present
+
+- name: Ensure schedule task to retrieve blacklist
+  cron:
+    name: dnscrypt blacklist update
+    minute: 0
+    hour: 2
+    user: nobody
+    job: >
+      curl -O {{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}
+        {{ dnscrypt_proxy_blacklist }}
+    cron_file: ansible_dnscrypt-proxy2_blacklist
