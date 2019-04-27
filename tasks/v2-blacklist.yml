@@ -4,7 +4,7 @@
   ini_file:
     path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
     section: blacklist
-    option: dnscrypt_proxy_blacklist
+    option: blacklist_file
     value: "{{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}"
     mode: '0644'
     backup: yes
