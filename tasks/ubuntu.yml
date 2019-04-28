@@ -81,18 +81,21 @@
   command: "grep {{ dnscrypt_proxy_resolver_name161 }} /usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv"
   register: checkserver
   changed_when: false
-- name: configure target server
-  replace:
-    dest: /etc/default/dnscrypt-proxy
-    regexp: '^DNSCRYPT_PROXY_RESOLVER_NAME=.*'
-    replace: "DNSCRYPT_PROXY_RESOLVER_NAME={{ dnscrypt_proxy_resolver_name161 }}"
-    backup: yes
-- name: add ephemeral-keys to default
-  lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^ephemeral-keys" line="ephemeral-keys"'
-  notify: restart dnscrypt
-- name: add logfile to default
-  lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^logfile=" line="logfile=/var/log/dnscrypt/dnscrypt.log"'
-  notify: restart dnscrypt
+
+- block:
+    - name: configure target server
+      replace:
+        dest: /etc/default/dnscrypt-proxy
+        regexp: '^DNSCRYPT_PROXY_RESOLVER_NAME=.*'
+        replace: "DNSCRYPT_PROXY_RESOLVER_NAME={{ dnscrypt_proxy_resolver_name161 }}"
+        backup: yes
+    - name: add ephemeral-keys to default
+      lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^ephemeral-keys" line="ephemeral-keys"'
+      notify: restart dnscrypt
+    - name: add logfile to default
+      lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^logfile=" line="logfile=/var/log/dnscrypt/dnscrypt.log"'
+      notify: restart dnscrypt
+  when: ansible_distribution_release == 'trusty' or ansible_distribution_release == 'xenial'
 
 - name: check if apparmor config is present
   stat: path=/etc/apparmor.d/usr.sbin.dnscrypt-proxy
