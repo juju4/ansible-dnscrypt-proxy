@@ -68,6 +68,12 @@
 #        line: "logfile=/var/log/dnscrypt/dnscrypt-proxy-dnscrypt.eu.log"
 #      notify: restart dnscrypt
 
+- name: Ensure /etc/init exists
+  file:
+    dest: /etc/init
+    state: directory
+    mode: '0755'
+
 - name: install dnscrypt configuration
   copy: 'src=dnscrypt-proxy.conf dest=/etc/init/dnscrypt-proxy.conf backup=yes mode=0644'
   notify: restart dnscrypt
