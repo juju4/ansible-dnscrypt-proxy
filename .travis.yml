@@ -29,9 +29,6 @@ env:
   - distribution: ubuntu
     version: 18.04
     suite: default-blacklist
-  - distribution: centos
-    version: 7
-    suite: default-v1
   - distribution: ubuntu
     version: 18.04
     suite: default-v1
