@@ -21,8 +21,3 @@ end
 describe port(53) do
   it { should be_listening.on('127.0.0.2') }
 end
-
-describe file('/var/log/dnscrypt-proxy.err') do
-  its(:content) { should match /\[NOTICE\] dnscrypt-proxy is ready - live servers:/ }
-  its(:content) { should_not match /FATAL/ }
-end
