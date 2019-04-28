@@ -42,4 +42,6 @@
 - name: add some nrpe commands for monitoring
   copy: src=dnscrypt-nrpe.cfg dest=/etc/nagios/nrpe.d/dnscrypt-nrpe.cfg mode=0644
 
+- include: systemd.yml
+
 ## http://bluepilltech.blogspot.ca/2015/05/configuring-openbsd-57s-default-unbound.html
