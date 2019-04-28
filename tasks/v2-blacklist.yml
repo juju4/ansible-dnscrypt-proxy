@@ -27,7 +27,7 @@
 
 - name: Ensure curl package is present for cron
   package:
-    name: cron
+    name: curl
     state: present
 
 - name: Ensure schedule task to retrieve blacklist
