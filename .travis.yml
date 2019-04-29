@@ -29,12 +29,6 @@ env:
   - distribution: ubuntu
     version: 18.04
     suite: default-blacklist
-  - distribution: ubuntu
-    version: 18.04
-    suite: default-v1
-  - distribution: ubuntu
-    version: 16.04
-    suite: default-v1
 
 before_install:
   - env
