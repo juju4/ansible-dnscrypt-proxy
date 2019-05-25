@@ -76,6 +76,7 @@ before_install:
   - gem install kitchen-sync
   - gem install kitchen-lxd_cli
   - gem list
+  - gem env
   - which kitchen
 ## ssh key for lxd_cli ?
   - ls ~/.ssh
