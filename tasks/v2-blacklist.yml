@@ -37,7 +37,6 @@
   register: pkg_result
   until: pkg_result is success
 
-- name: setup cron backup
 - name: Ensure curl package is present for cron
   package:
     name: curl
