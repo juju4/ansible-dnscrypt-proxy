@@ -1,6 +1,6 @@
 ---
 driver:
-  name: lxd
+  name: lxd_cli
 
 transport:
   name: sftp
