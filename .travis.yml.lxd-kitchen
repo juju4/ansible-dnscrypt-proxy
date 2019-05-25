@@ -29,12 +29,6 @@ env:
   - distribution: ubuntu
     version: 18.04
     suite: default-blacklist
-  - distribution: centos
-    version: 7
-    suite: default-v1
-  - distribution: ubuntu
-    version: 18.04
-    suite: default-v1
 
 before_install:
   - env
@@ -82,6 +76,7 @@ before_install:
   - gem install kitchen-sync
   - gem install kitchen-lxd_cli
   - gem list
+  - gem env
   - which kitchen
 ## ssh key for lxd_cli ?
   - ls ~/.ssh
