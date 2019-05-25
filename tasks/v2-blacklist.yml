@@ -25,6 +25,19 @@
     mode: '0755'
     owner: nobody
 
+- name: Debian | ensure cron is installed
+  apt: name=cron state=present
+  when: ansible_os_family == 'Debian'
+  register: pkg_result
+  until: pkg_result is success
+
+- name: RedHat | ensure cron is installed
+  yum: name=crontabs state=present
+  when: ansible_os_family == "RedHat"
+  register: pkg_result
+  until: pkg_result is success
+
+- name: setup cron backup
 - name: Ensure curl package is present for cron
   package:
     name: curl
