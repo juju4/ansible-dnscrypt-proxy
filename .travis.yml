@@ -1,108 +1,113 @@
 ---
-dist: xenial
+## from https://github.com/geerlingguy/ansible-role-apache/blob/master/.travis.yml
 sudo: required
-rvm:
-  - 2.6
 
 env:
-## those images need pre-configuration before being usable (openssh...)
 #  - distribution: centos
 #    version: 6
+#    init: /sbin/init
+#    run_opts: ""
+#    ansible_extra_vars: ''
   - distribution: centos
     version: 7
-    suite: default
+    init: /usr/lib/systemd/systemd
+    run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
+    ansible_extra_vars: ''
   - distribution: ubuntu
     version: 18.04
+    init: /lib/systemd/systemd
+    run_opts: ""
+    ansible_extra_vars: ''
     suite: default
   - distribution: ubuntu
     version: 16.04
+    init: /lib/systemd/systemd
+    run_opts: ""
+    ansible_extra_vars: ''
+    suite: default
+  - distribution: ubuntu
+    version: 14.04
+    init: /sbin/init
+    run_opts: ""
+    ansible_extra_vars: ''
     suite: default
 #  - distribution: ubuntu
+#    version: 16.04
+#    init: /lib/systemd/systemd
+#    run_opts: "--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro"
+#    ansible_extra_vars: "'-e dnscryptproxy_force_source=true'"
+#  - distribution: ubuntu
 #    version: 14.04
+#    init: /sbin/init
+#    run_opts: ""
+#    ansible_extra_vars: "'-e dnscryptproxy_force_source=true'"
+## "Tag 12.04 not found in repository docker.io/library/ubuntu"
 #  - distribution: ubuntu
 #    version: 12.04
+#    init: /sbin/init
+#    run_opts: ""
 #  - distribution: alpine
 #    version: 3.4
+#    init: /sbin/init
+#    run_opts: ""
   - distribution: centos
     version: 7
+    init: /usr/lib/systemd/systemd
+    run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
+    ansible_extra_vars: ''
     suite: default-blacklist
   - distribution: ubuntu
     version: 18.04
+    init: /lib/systemd/systemd
+    run_opts: ""
+    ansible_extra_vars: ''
     suite: default-blacklist
 
+services:
+  - docker
+
 before_install:
+  # - sudo apt-get update
+  # Pull container
+  - 'sudo docker pull ${distribution}:${version}'
   - env
   - pwd
   - find -ls
-## use appropriate role path and not github name
+  # role dependencies
   - "[ -f get-dependencies.sh ] && sh -x get-dependencies.sh"
-  - echo "deb http://archive.ubuntu.com/ubuntu xenial-backports main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/xenial-backports.list
-  - sudo apt-get update -qq
-  - sudo apt -t xenial-backports -y install lxd acl dnsmasq-base zfsutils-linux -q
-## change of group implies logout+login to apply... can't do with travis = run as root (sic)    = use 'newgrp lxd' ? = travis stalling all ...
-## https://github.com/travis-ci/travis-ci/issues/1839   or chain: sudo -E su $USER -c "..."
-  - sudo usermod -G lxd travis
-  # Pull container
-#  - lxc remote add images images.linuxcontainers.org
-  - sudo -E su $USER -c "lxc remote list"
-  - sudo -E su $USER -c "lxc image list"
-## pre-download base images
-  - 'sudo -E su $USER -c "[ ${distribution} == ubuntu ] || lxc image copy images:${distribution}/${version}/amd64 local: --alias=${distribution}-${version}-nossh"'
-  - 'sudo -E su $USER -c "[ ${distribution} == ubuntu ] && lxc image copy ubuntu:${version} local: --alias=${distribution}-${version}" || true'
-## configure network
-  - ifconfig -a
-  - sudo lxc info
-  - sudo lxc network list
-  - sudo lxc network create lxdbr0
-  - sudo lxc network show lxdbr0
-  - sudo lxc network attach-profile lxdbr0 default ens4
-  - sudo lxc profile device get default ens4 nictype || true
-  - sudo service lxd restart
-  - ps ax | grep dnsmasq
-  - systemctl status -l --no-pager lxd || true
-  - cat /etc/network/interfaces.d/50-cloud-init.cfg
-  - sudo lxc network list
-# configure storage pool
-  - sudo lxc storage list
-  - sudo lxc storage create pool1 zfs
-  - sudo lxc storage list
-  - sudo zpool list
-  - sudo lxc profile device add default root disk path=/ pool=pool1
-  - sudo lxc profile show default
-
-  - sudo pip install ansible ansible-lint
-  - gem install kitchen
-  - gem install kitchen-ansible
-  - gem install kitchen-sync
-  - gem install kitchen-lxd_cli
-  - gem list
-  - gem env
-  - which kitchen
-## ssh key for lxd_cli ?
-  - ls ~/.ssh
-  - ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -P ""
-## sudo/su get us a non-usual PATH ...
-  - '[ "X${distribution}" == "Xcentos" ] && sudo -E su $USER -c "sh -x ./test/lxd/centos-ssh-image.sh" || true'
-  - sudo -E su $USER -c "env"
-  - sudo -E su $USER -c "env PATH=$PATH kitchen diagnose --all"
-#  - sudo -E su $USER -c "kitchen diagnose --all"
-#  - sudo -E -u $USER kitchen diagnose --all
+  # Customize container
+  - 'sudo docker build --rm=true --file=test/travis/Dockerfile.${distribution}-${version} --tag=${distribution}-${version}:ansible test'
 
 script:
-  - ansible-lint tasks/main.yml || true
-#  - KITCHEN_LOCAL_YAML=.kitchen.local.yml bundle exec kitchen verify ${INSTANCE}
-  - sudo -E su $USER -c "env PATH=$PATH kitchen verify ${suite}-${distribution}-${version//./} -l debug || (cat $HOME/.kitchen/logs/${suite}-${distribution}-${version//./}.log; find /tmp/kitchen)"
+  - container_id=$(mktemp)
+    # Run container in detached state
+  - 'sudo docker run --detach --volume="${PWD%/*}":/etc/ansible/roles:rw ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
+
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --version'
+
+  # Ansible syntax check.
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.dnscryptproxy/test/integration/${suite}/default.yml --syntax-check'
+
+  # Test role.
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.dnscryptproxy/test/integration/${suite}/default.yml -vvv ${ansible_extra_vars}'
+
+  # Test role idempotence. known fail
+  - >
+    sudo docker exec "$(cat ${container_id})" env TERM=xterm ansible-playbook /etc/ansible/roles/juju4.dnscryptproxy/test/integration/${suite}/default.yml ${ansible_extra_vars}
+    | tee /tmp/idempotency.log
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotence test: pass' && exit 0)
+    || (echo 'Idempotence test: fail' && cat /tmp/idempotency.log && exit 0)
+
+  # serverspec tests: NOK, not updating /etc/resolv.conf in docker
+#  - 'sudo docker exec --tty "$(cat ${container_id})" /etc/ansible/roles/juju4.dnscryptproxy/test/integration/default/serverspec/run-local-tests.sh'
 
 after_script:
-  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'systemctl -l --no-pager status dnscrypt-proxy'"
-  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'cat /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml'"
-  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ls -la /var/log/dnscrypt-proxy*'"
-  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'cat /tmp/idempotency.test'"
-  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'netstat -anp'"
-  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ss -nlp'"
-  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'systemctl -l --no-pager status'"
-  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'journalctl -xe --no-pager'"
-  - sudo -E su $USER -c "env PATH=$PATH kitchen destroy ${suite}-${distribution}-${version//./}"
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ps axu'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm cat /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml'
+
+  # Clean up
+  - 'sudo docker stop "$(cat ${container_id})"'
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
