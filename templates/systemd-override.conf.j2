@@ -15,7 +15,7 @@ RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
           (ansible_virtualization_type == "lxc" or ansible_virtualization_type == "docker")
         ) and
       not (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int < 8) %}
-SystemCallFilter=close connect epoll_ctl epoll_pwait exit_group futex getdents64 getpeername getrandom getsockname madvise nanosleep newfstatat openat read recvfrom restart_syscall rt_sigreturn sched_yield sendto setsockopt socket write setgroups arch_prctl sched_getaffinity mmap rt_sigprocmask sigaltstack rt_sigaction clone readlinkat fcntl getcwd tgkill epoll_create1 fstat chdir bind listen uname getsockopt accept4 fsync shmctl
+SystemCallFilter=close connect epoll_ctl epoll_pwait exit_group futex getdents64 getpeername getrandom getsockname madvise nanosleep newfstatat openat read recvfrom restart_syscall rt_sigreturn sched_yield sendto setsockopt socket write setgroups arch_prctl sched_getaffinity mmap rt_sigprocmask sigaltstack rt_sigaction clone readlinkat fcntl getcwd tgkill epoll_create1 fstat chdir bind listen uname getsockopt accept4 fsync shmctl renameat fchownat
 {% if (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int >= 8) or (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int >= 18) %}
 #SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged @chown @keyring
 SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @chown @keyring
