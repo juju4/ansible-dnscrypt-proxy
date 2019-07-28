@@ -7,7 +7,7 @@
 - name: check current pip version
   shell: |
     set -o pipefail
-    pip --version | sed "s/pip \(.*\) from .*/\1/"'
+    pip --version | sed "s/pip \(.*\) from .*/\1/"
   args:
     executable: /bin/bash
   changed_when: false
