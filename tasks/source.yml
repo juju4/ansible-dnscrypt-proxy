@@ -84,7 +84,7 @@
   set_fact:
     dpdir: "dnscrypt-proxy-{{ dnscryptproxy_url | basename | regex_replace('.zip$', '') }}"
 - name: Build dnscrypt-proxy
-  shell: "{{ item }}"
+  command: "{{ item }}"
   args:
     chdir: "/root/{{ dpdir }}"
     creates: "/root/{{ dpdir }}/src/proxy/dnscrypt-proxy"

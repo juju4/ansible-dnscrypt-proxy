@@ -1,11 +1,15 @@
 ---
 
-## ubuntu xenial: 8.1, trusty: 1.5, centos7:
+## ubuntu xenial: 8.1, trusty: 1.5, centos7: 8.1
 ## trusty gets:
 ## https://github.com/Toblerity/Shapely/issues/305      ImportError: No module named packaging.version
 ## https://github.com/pypa/setuptools/issues/937
 - name: check current pip version
-  shell: 'pip --version | sed "s/pip \(.*\) from .*/\1/"'
+  shell: |
+    set -o pipefail
+    pip --version | sed "s/pip \(.*\) from .*/\1/"'
+  args:
+    executable: /bin/bash
   changed_when: false
   register: pipv
 
@@ -16,6 +20,10 @@
 
     - name: upgrade pip to latest
       command: pip install --upgrade pip
+      when: ansible_os_family != "Debian"
+
+    - name: upgrade setuptools to latest
+      command: pip install --upgrade setuptools
       when: ansible_os_family != "Debian"
 
 ## FIXME! debian/ubuntu prevent that, https://github.com/pypa/pip/issues/2964
@@ -40,4 +48,4 @@
 #          command: "python /root/get-pip.py creates=/usr/bin/pip"
 #      when: ansible_os_family == "Debian"
 
-  when: pipv.stdout|int is version_compare( '8.1', '<')
+  when: pipv.stdout|int is version_compare( '10.1', '<')
