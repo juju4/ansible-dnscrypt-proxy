@@ -42,6 +42,14 @@
     mode: '0644'
     backup: yes
 
+- name: Configure max_clients
+  ini_file:
+    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    section: null
+    option: max_clients
+    value: "'{{ dnscrypt_proxy_max_clients | default(1000) }}'"
+    mode: '0644'
+
 - include: v2-blacklist.yml
   when: dnscrypt_proxy_blacklist != ''
 
