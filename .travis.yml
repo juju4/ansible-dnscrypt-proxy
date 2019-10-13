@@ -85,7 +85,7 @@ script:
     # Run container in detached state
   - 'sudo docker run --detach --volume="${PWD%/*}":/etc/ansible/roles:rw ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --version || pip install ansible'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --version || sudo pip install ansible'
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --version'
 
   # Ansible syntax check.
@@ -106,7 +106,7 @@ script:
 #  - 'sudo docker exec --tty "$(cat ${container_id})" /etc/ansible/roles/juju4.dnscryptproxy/test/integration/default/serverspec/run-local-tests.sh'
 
 after_failure:
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ls /usr/bin/ | egrep "(python|pip)"'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ls -l /usr/bin/ | egrep "(python|pip|ansible)"'
 
 after_script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ps axu'
