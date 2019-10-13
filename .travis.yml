@@ -85,9 +85,8 @@ script:
     # Run container in detached state
   - 'sudo docker run --detach --volume="${PWD%/*}":/etc/ansible/roles:rw ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm pip --version'
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm pip3 --version'
-  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --version || sudo pip install ansible'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm pip --version || true'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm pip3 --version || true'
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --version'
 
   # Ansible syntax check.
