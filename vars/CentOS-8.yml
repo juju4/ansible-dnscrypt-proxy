@@ -1,0 +1,23 @@
+---
+
+dnscrypt_pkg:
+    - ldns
+    - libsodium-devel
+    - bind-utils
+    - ca-certificates
+    - wget
+
+python_sni:
+    - python-devel
+    - python-pip
+    - libffi-devel
+    - openssl-devel
+    - gcc
+
+dnscryptproxy_src_deps:
+    - ldns-devel
+    - ca-certificates
+
+dnscryptproxy_src_systemd_deps:
+    - pkgconfig
+    - systemd-devel
