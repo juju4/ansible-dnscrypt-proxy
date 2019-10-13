@@ -31,6 +31,7 @@
     src: /opt/dnscrypt-proxy2/linux-x86_64/example-dnscrypt-proxy.toml
     dest: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
     mode: '0644'
+    remote_src: true
   when: not cfg.stat.exists
 
 - name: Configure listen address
@@ -57,7 +58,7 @@
   command: ./dnscrypt-proxy -service install
   args:
     chdir: /opt/dnscrypt-proxy2/linux-x86_64
-    creates: /etc/init.d/dnscrypt-proxy
+    creates: /etc/systemd/system/dnscrypt-proxy.service
 
 - name: Start dnscrypt-proxy2 service
   command: ./dnscrypt-proxy -service start
