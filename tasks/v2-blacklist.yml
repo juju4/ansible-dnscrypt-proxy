@@ -45,8 +45,8 @@
 - name: Ensure schedule task to retrieve blacklist
   cron:
     name: dnscrypt blacklist update
-    minute: 0
-    hour: 2
+    minute: '0'
+    hour: '2'
     user: nobody
     job: >
       curl -O {{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}
