@@ -32,10 +32,36 @@
 - include: v2.yml
   when: dnscryptproxy_v|int == 2
 
+- name: check if systemd-resolved is present
+  stat:
+    path: /etc/systemd/resolved.conf
+  register: systemdresolved
+
+# https://wiki.archlinux.org/index.php/Systemd-resolved
+- block:
+    - name: Update systemd-resolved configuration to use dnscrypt-proxy only
+      lineinfile:
+        dest: /etc/systemd/resolved.conf
+        regexp: "{{ item.re }}"
+        line: "{{ item.l }}"
+        backup: yes
+      with_items:
+        - { re: '^DNS=.*', l: 'DNS=127.0.0.2' }
+        - { re: '^Domains=.*', l: 'Domains=~.' }
+      notify:
+        - restart systemd-resolved
+  when: systemdresolved.stat.exists
+
 ## Not possible in docker testing, https://github.com/docker/docker/issues/1297
 - name: enable dnscrypt in resolv.conf
-  lineinfile: dest=/etc/resolv.conf line="nameserver 127.0.0.2" insertbefore=BOF backup=yes
-  when: ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
+  lineinfile:
+    dest: /etc/resolv.conf
+    line: "nameserver 127.0.0.2"
+    insertbefore: BOF
+    backup: yes
+  when: >
+    (ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker') and
+    not systemdresolved.stat.exists
 
 - name: Ensure nrpe.d dir exists
   file: dest=/etc/nagios/nrpe.d state=directory mode=0755

@@ -15,3 +15,6 @@
     daemon_reload: yes
   when: >
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
+
+- name: restart systemd-resolved
+  service: name=systemd-resolved state=restarted
