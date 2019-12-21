@@ -4,6 +4,7 @@ dnscrypt_pkg:
     - ldns
     - libsodium-devel
     - bind-utils
+    - python3-libselinux
     - ca-certificates
     - wget
 
