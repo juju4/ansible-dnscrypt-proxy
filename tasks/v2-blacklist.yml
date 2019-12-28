@@ -49,8 +49,7 @@
     hour: '2'
     user: nobody
     job: >
-      curl -O {{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}
-        {{ dnscrypt_proxy_blacklist }}
+      curl -O {{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }} {{ dnscrypt_proxy_blacklist }}
     cron_file: ansible_dnscrypt-proxy2_blacklist
 
 - name: Check if blacklist file
