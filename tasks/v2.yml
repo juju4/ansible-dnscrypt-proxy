@@ -7,6 +7,8 @@
     mode: '0644'
     checksum: "{{ dnscryptproxyv2_hash }}"
     backup: yes
+  register: dl_result
+  until: dl_result is success
 
 - name: Ensure /opt/dnscrypt-proxy2 exists
   file:
@@ -39,7 +41,8 @@
     path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
     section: null
     option: listen_addresses
-    value: "{{ dnscryptproxyv2_listen }}"
+    #value: "{{ dnscryptproxyv2_listen | string }}"
+    value: "[{{ dnscryptproxyv2_listen | join(', ') }}]"
     mode: '0644'
     backup: yes
 
