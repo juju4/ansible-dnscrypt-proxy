@@ -63,4 +63,6 @@
     dest: "{{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}"
     owner: nobody
     mode: '0644'
+  register: dl_result
+  until: dl_result is success
   when: not blacklistf.stat.exists
