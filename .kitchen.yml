@@ -24,6 +24,7 @@ platforms:
   - name: ubuntu-16.04
   - name: ubuntu-14.04
 #  - name: ubuntu-12.04
+  - name: centos-8
   - name: centos-7
   - name: centos-6
 ## FIXME! workaround Ansible 2.2+/cryptography:
@@ -40,12 +41,14 @@ suites:
     includes:
       - ubuntu-18.04
       - ubuntu-16.04
+      - centos-8
       - centos-7
       - centos-6
   - name: default-blacklist
     run_list:
     attributes:
     includes:
+      - centos-8
       - centos-7
       - ubuntu-18.04
   - name: default-v1
