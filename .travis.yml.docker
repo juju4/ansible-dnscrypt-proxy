@@ -3,16 +3,18 @@
 sudo: required
 
 env:
-#  - distribution: centos
-#    version: 6
-#    init: /sbin/init
-#    run_opts: ""
-#    ansible_extra_vars: ''
+  - distribution: centos
+    version: 8
+    init: /usr/lib/systemd/systemd
+    run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
+    ansible_extra_vars: ''
+    suite: default
   - distribution: centos
     version: 7
     init: /usr/lib/systemd/systemd
     run_opts: "'--privileged --volume=/sys/fs/cgroup:/sys/fs/cgroup:ro'"
     ansible_extra_vars: ''
+    suite: default
   - distribution: ubuntu
     version: 18.04
     init: /lib/systemd/systemd
@@ -83,6 +85,8 @@ script:
     # Run container in detached state
   - 'sudo docker run --detach --volume="${PWD%/*}":/etc/ansible/roles:rw ${run_opts} ${distribution}-${version}:ansible "${init}" > "${container_id}"'
 
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm pip --version || true'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm pip3 --version || true'
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ansible --version'
 
   # Ansible syntax check.
@@ -101,6 +105,15 @@ script:
 
   # serverspec tests: NOK, not updating /etc/resolv.conf in docker
 #  - 'sudo docker exec --tty "$(cat ${container_id})" /etc/ansible/roles/juju4.dnscryptproxy/test/integration/default/serverspec/run-local-tests.sh'
+
+after_failure:
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ls -l /usr/bin/ | egrep "(python|pip|ansible)"'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm pip freeze'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm pip3 freeze'
+  - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm rpm -qa'
+  # Check what happened on systemd systems.
+  - 'docker exec --tty "$(cat ${container_id})" env TERM=xterm systemctl -l --no-pager status dnscrypt-proxy'
+  - 'docker exec --tty "$(cat ${container_id})" env TERM=xterm journalctl -xe --no-pager'
 
 after_script:
   - 'sudo docker exec --tty "$(cat ${container_id})" env TERM=xterm ps axu'

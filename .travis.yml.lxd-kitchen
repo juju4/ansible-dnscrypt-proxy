@@ -5,9 +5,9 @@ rvm:
   - 2.6
 
 env:
-## those images need pre-configuration before being usable (openssh...)
-#  - distribution: centos
-#    version: 6
+  - distribution: centos
+    version: 8
+    suite: default
   - distribution: centos
     version: 7
     suite: default
@@ -93,6 +93,11 @@ script:
 #  - KITCHEN_LOCAL_YAML=.kitchen.local.yml bundle exec kitchen verify ${INSTANCE}
   - sudo -E su $USER -c "env PATH=$PATH kitchen verify ${suite}-${distribution}-${version//./} -l debug || (cat $HOME/.kitchen/logs/${suite}-${distribution}-${version//./}.log; find /tmp/kitchen)"
 
+after_failure:
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ls -l /usr/bin/ | egrep "(python|pip|ansible)"'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'pip freeze'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'pip3 freeze'"
+
 after_script:
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'systemctl -l --no-pager status dnscrypt-proxy'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'cat /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml'"
@@ -100,6 +105,7 @@ after_script:
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'cat /tmp/idempotency.test'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'netstat -anp'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ss -nlp'"
+  - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'ps auxw'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'systemctl -l --no-pager status'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen exec ${suite}-${distribution}-${version//./} -c 'journalctl -xe --no-pager'"
   - sudo -E su $USER -c "env PATH=$PATH kitchen destroy ${suite}-${distribution}-${version//./}"
