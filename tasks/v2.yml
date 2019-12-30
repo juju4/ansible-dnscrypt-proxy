@@ -58,7 +58,7 @@
   when: dnscrypt_proxy_blacklist != ''
 
 - name: Install dnscrypt-proxy2 service
-  command: ./dnscrypt-proxy -service install -loglevel 6
+  command: ./dnscrypt-proxy -service install
   args:
     chdir: /opt/dnscrypt-proxy2/linux-x86_64
     creates: /etc/systemd/system/dnscrypt-proxy.service
