@@ -1,0 +1,15 @@
+{{ ansible_managed | comment }}
+## /etc/logrotate.d/dnscrypt
+{{ dnscrypt_proxy_logslist | default([dnscrypt_proxy_blacklist_logpath]) | join("\n") }} {
+    rotate {{ dnscrypt_logrotate_days | default(7) |int }}
+    daily
+    missingok
+    notifempty
+    delaycompress
+    compress
+    sharedscripts
+    create 644 root {% if ansible_distribution == 'Ubuntu' %}syslog{% else %}root{% endif %}
+
+    su root {% if ansible_distribution == 'Ubuntu' %}syslog{% else %}root{% endif %}
+
+}
