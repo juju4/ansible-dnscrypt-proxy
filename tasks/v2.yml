@@ -54,8 +54,18 @@
     value: "{{ dnscrypt_proxy_max_clients | default(1000) }}"
     mode: '0644'
 
+- name: Configure other options
+  ini_file:
+    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "'{{ item.value }}'"
+    mode: '0644'
+    backup: yes
+  with_items: "{{ dnscrypt_proxy_config }}"
+
 - include: v2-blacklist.yml
-  when: dnscrypt_proxy_blacklist != ''
+  when: dnscrypt_proxy_blacklist|string
 
 - name: Install dnscrypt-proxy2 service
   command: ./dnscrypt-proxy -service install

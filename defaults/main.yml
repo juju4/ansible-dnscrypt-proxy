@@ -11,6 +11,10 @@ dnscrypt_proxy_blacklist: https://download.dnscrypt.info/blacklists/domains/myba
 dnscrypt_proxy_blacklist_path: /var/cache/dnscrypt-proxy2
 dnscrypt_proxy_blacklist_logpath: /var/log/dnscrypt-proxy2-blacklist.log
 
+dnscrypt_proxy_config: []
+#  - { section: 'query_log', option: 'file', value: '/var/log/dnscrypt-proxy2-query.log' }
+#  - { section: 'nx_log', option: 'file', value: '/var/log/dnscrypt-proxy2-nx.log' }
+
 #dnscryptproxy_v: 1
 
 ## maybe ovveriden by distribution values (from their packages)
