@@ -2,7 +2,7 @@
 
 - name: Ensure override folder exists
   file:
-    dest: /etc/systemd/system/dnscrypt-proxyd.service.d
+    dest: /etc/systemd/system/dnscrypt-proxy.service.d
     state: directory
     mode: '0755'
 
@@ -10,7 +10,7 @@
 - name: Review dnscrypt-proxy systemd options
   template:
     src: systemd-override.conf.j2
-    dest: /etc/systemd/system/dnscrypt-proxyd.service.d/override.conf
+    dest: /etc/systemd/system/dnscrypt-proxy.service.d/override.conf
     mode: '0644'
   notify:
     - reload systemd
