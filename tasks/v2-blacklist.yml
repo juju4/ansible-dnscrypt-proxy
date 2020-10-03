@@ -42,6 +42,13 @@
     name: curl
     state: present
 
+- name: set file for exclusions
+  template:
+    src: "{{ dnscrypt_proxy_blacklist_exclude_template }}.j2"
+    dest: "{{ dnscrypt_proxy_blacklist_exclude }}"
+    mode: '0644'
+    backup: yes
+
 - name: Ensure schedule task to retrieve blacklist
   cron:
     name: dnscrypt blacklist update
@@ -49,7 +56,7 @@
     hour: '2'
     user: nobody
     job: >
-      curl -O {{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }} {{ dnscrypt_proxy_blacklist }}
+      curl {{ dnscrypt_proxy_blacklist }} | egrep -v -f {{ dnscrypt_proxy_blacklist_exclude }} > {{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}
     cron_file: ansible_dnscrypt-proxy2_blacklist
 
 - name: Check if blacklist file
