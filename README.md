@@ -1,5 +1,9 @@
 [![Build Status - Master](https://travis-ci.org/juju4/ansible-dnscrypt-proxy.svg?branch=master)](https://travis-ci.org/juju4/ansible-dnscrypt-proxy)
 [![Build Status - Devel](https://travis-ci.org/juju4/ansible-dnscrypt-proxy.svg?branch=devel)](https://travis-ci.org/juju4/ansible-dnscrypt-proxy/branches)
+
+[![Actions Status - Master](https://github.com/juju4/ansible-dnscrypt-proxy/workflows/AnsibleCI/badge.svg)](https://github.com/juju4/ansible-dnscrypt-proxy/actions?query=branch%3Amaster)
+[![Actions Status - Devel](https://github.com/juju4/ansible-dnscrypt-proxy/workflows/AnsibleCI/badge.svg?branch=devel)](https://github.com/juju4/ansible-dnscrypt-proxy/actions?query=branch%3Adevel)
+
 # dnscrypt proxy ansible role
 
 Ansible role to setup dnscrypt proxy
@@ -16,11 +20,12 @@ It was tested on the following versions:
  * 2.0
  * 2.2
  * 2.3
+ * 2.10
 
 ### Operating systems
 
-Tested with vagrant on Ubuntu 16.04, 14.04 and Centos 7.1
-Kitchen test available
+Tested on Ubuntu 16.04, 18.04, 20.04 and Centos 7-8
+Vagrant, Kitchen test and Github Action available
 
 ### Dependencies
 
