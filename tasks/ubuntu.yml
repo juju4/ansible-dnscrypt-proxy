@@ -16,14 +16,15 @@
   copy:
     src: /etc/resolv.conf
     dest: /etc/resolv.conf.prednscrypt
+    mode: '0644'
     remote_src: true
 
 ## FIXME! xenial: dmesg: read kernel buffer failed: Operation not permitted
 ## FIXME! ansible v2.2, https://github.com/ansible/ansible-modules-core/issues/5459
 - name: Ubuntu | Extra packages install
   apt: name={{ dnscrypt_pkg }} state=present update_cache=yes
-## don't start dnscrypt before we refresh resolvers file
-## https://askubuntu.com/questions/74061/install-packages-without-starting-background-processes-and-services
+  ## don't start dnscrypt before we refresh resolvers file
+  ## https://askubuntu.com/questions/74061/install-packages-without-starting-background-processes-and-services
   environment:
     RUNLEVEL: 1
   register: pkg_result
@@ -55,7 +56,7 @@
   stat: path=/etc/ld.so.nohwcap
   register: stld
 - name: Ensure /etc/ld.so.nohwcap exists
-  file: path=/etc/ld.so.nohwcap state=touch
+  file: path=/etc/ld.so.nohwcap state=touch mode=0644
   when: not stld.stat.exists
 ## pid is written as root
 #    - replace: "dest=/etc/init.d/dnscrypt regexp='{{ item.regexp }}' replace='{{ item.replace }}' backup=yes"
@@ -88,12 +89,21 @@
         dest: /etc/default/dnscrypt-proxy
         regexp: '^DNSCRYPT_PROXY_RESOLVER_NAME=.*'
         replace: "DNSCRYPT_PROXY_RESOLVER_NAME={{ dnscrypt_proxy_resolver_name161 }}"
+        mode: '0644'
         backup: yes
     - name: add ephemeral-keys to default
-      lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^ephemeral-keys" line="ephemeral-keys"'
+      lineinfile:
+        dest: /etc/default/dnscrypt-proxy
+        regexp: "^ephemeral-keys"
+        line: "ephemeral-keys"
+        mode: '0644'
       notify: restart dnscrypt
     - name: add logfile to default
-      lineinfile: 'dest=/etc/default/dnscrypt-proxy regexp="^logfile=" line="logfile=/var/log/dnscrypt/dnscrypt.log"'
+      lineinfile:
+        dest: /etc/default/dnscrypt-proxy
+        regexp: "^logfile="
+        line: "logfile=/var/log/dnscrypt/dnscrypt.log"
+        mode: '0644'
       notify: restart dnscrypt
   when: ansible_distribution_release == 'trusty' or ansible_distribution_release == 'xenial'
 
@@ -106,6 +116,7 @@
         dest: /etc/apparmor.d/usr.sbin.dnscrypt-proxy
         regexp: '{{ item.r }}'
         line: '{{ item.l }}'
+        mode: '0644'
         insertafter: '/run/dnscrypt-proxy.pid'
       with_items:
         - { r: '  /var/log/dnscrypt/,', l: '  /var/log/dnscrypt/dnscrypt.log mrw,' }

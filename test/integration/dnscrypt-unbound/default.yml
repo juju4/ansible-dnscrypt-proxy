@@ -8,7 +8,7 @@
     - juju4.dnscryptproxy
     - jdauphant.unbound
   tasks:
-## Debian/Ubuntu bug: using only dnscrypt
+    ## Debian/Ubuntu bug: using only dnscrypt
     - name: Debian | Configure resolvconf
       lineinfile:
         dest: /etc/resolvconf/resolv.conf.d/base
@@ -20,7 +20,7 @@
       become: yes
       command: resolvconf -u
       when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-## Redhat/Centos: chain unbound+dnscrypt
+    ## Redhat/Centos: chain unbound+dnscrypt
     - name: Redhat | Update NetworkManager DNS config
       lineinfile:
         dest: "/etc/sysconfig/network-scripts/ifcfg-{{ ansible_default_ipv4.interface }}"

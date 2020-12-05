@@ -6,6 +6,7 @@
   copy:
     src: /etc/resolv.conf.prednscrypt
     dest: /etc/resolv.conf
+    mode: '0644'
     remote_src: true
     backup: yes
   when: (ansible_virtualization_type is defined and ansible_virtualization_type == "lxc")
@@ -13,13 +14,14 @@
 - name: Ensure directory exists
   file:
     dest: /usr/share/dnscrypt-proxy
+    mode: '0755'
     state: directory
 
 ## Note: without checksum, ansible will not refresh the file... force to delete if say older than...
-#- name: check resolver file last modification
-#  command: "find /usr/share/dnscrypt-proxy/ -mtime +30"
-#  register: findr
-#  changed_when: false
+# - name: check resolver file last modification
+#   command: "find /usr/share/dnscrypt-proxy/ -mtime +30"
+#   register: findr
+#   changed_when: false
 
 - name: force resolver file refresh
   file: dest=/usr/share/dnscrypt-proxy/dnscrypt-resolvers.csv state=absent
@@ -30,11 +32,11 @@
 ## FIXME! travis/trusty/get_url: failed to create temporary content file: (104, 'ECONNRESET')
 ## FIXME! working fine in travis+docker, but dns fails in jenkins+lxc = resolv.conf switch workaround
 - name: update resolvers file
-#  get_url:
-#    url: "{{ item }}"
-#    dest: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
-#    mode: '0644'
-#    backup: yes
+  # get_url:
+  #   url: "{{ item }}"
+  #   dest: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
+  #   mode: '0644'
+  #   backup: yes
   command: "wget -O /usr/share/dnscrypt-proxy/{{ item | basename }} {{ item }}"
   args:
     creates: "/usr/share/dnscrypt-proxy/{{ item | basename }}"
@@ -55,5 +57,6 @@
   lineinfile:
     dest: /etc/resolv.conf
     regexp: '^nameserver .*'
+    mode: '0644'
     line: 'nameserver 127.0.2.1'
   when: (ansible_virtualization_type is defined and ansible_virtualization_type == "lxc")

@@ -20,6 +20,7 @@
   unarchive:
     src: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
     dest: /opt/dnscrypt-proxy2
+    mode: '0755'
     copy: no
     creates: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy
 
@@ -42,7 +43,7 @@
     section: null
     option: listen_addresses
     value: "{{ dnscryptproxyv2_listen | string }}"
-    #value: "[{{ dnscryptproxyv2_listen | join(', ') }}]"
+    # value: "[{{ dnscryptproxyv2_listen | join(', ') }}]"
     mode: '0644'
     backup: yes
 
@@ -74,8 +75,8 @@
     creates: /etc/systemd/system/dnscrypt-proxy.service
 
 - name: Start dnscrypt-proxy2 service
-#  command: ./dnscrypt-proxy -service start
-#  args:
-#    chdir: /opt/dnscrypt-proxy2/linux-x86_64
+  # command: ./dnscrypt-proxy -service start
+  # args:
+  #   chdir: /opt/dnscrypt-proxy2/linux-x86_64
   service: name=dnscrypt-proxy state=started
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")

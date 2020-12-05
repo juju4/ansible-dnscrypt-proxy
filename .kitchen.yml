@@ -9,57 +9,47 @@ provisioner:
   name: ansible_playbook
   roles_path: ../
   hosts: all
-#  ansible_verbose: true
+  # ansible_verbose: true
   ansible_verbose: false
   ansible_verbosity: 3
   ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
   require_ansible_omnibus: true
-#  require_chef_for_busser: false
+  # require_chef_for_busser: false
   enable_yum_epel: true
   ansible_connection: ssh
 
 platforms:
+  - name: ubuntu-20.04
   - name: ubuntu-18.04
-## FIXME! ansible v2.2, https://github.com/ansible/ansible-modules-core/issues/5459
+  # FIXME! ansible v2.2, https://github.com/ansible/ansible-modules-core/issues/5459
   - name: ubuntu-16.04
-  - name: ubuntu-14.04
-#  - name: ubuntu-12.04
   - name: centos-8
   - name: centos-7
-  - name: centos-6
-## FIXME! workaround Ansible 2.2+/cryptography:
-##  https://github.com/ansible/ansible/issues/276 no attribute 'HAVE_DECL_MPZ_POWM_SEC'
-    provisioner:
-## Desired version, only affects apt-get installs
-      ansible_version: 2.1.2.0
-#  - name: alpine-3.4
 
 suites:
   - name: default
     run_list:
     attributes:
     includes:
+      - ubuntu-20.04
       - ubuntu-18.04
-      - ubuntu-16.04
       - centos-8
       - centos-7
-      - centos-6
   - name: default-blacklist
     run_list:
     attributes:
     includes:
       - centos-8
       - centos-7
-      - ubuntu-18.04
+      - ubuntu-20.04
   - name: default-v1
     run_list:
     attributes:
   - name: default-source
     run_list:
     includes:
+      - ubuntu-20.04
       - ubuntu-18.04
-      - ubuntu-16.04
-      - ubuntu-14.04
     provisioner:
       name: ansible_playbook
       playbook: test/integration/default/source.yml

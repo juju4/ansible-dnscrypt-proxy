@@ -34,13 +34,17 @@
         url: "{{ dnscryptproxy_libsodium_url }}"
         dest: "/root/{{ dnscryptproxy_libsodium_url | basename }}"
         checksum: "sha256:{{ dnscryptproxy_libsodium_checksum }}"
-#        validate_certs: no
+        # validate_certs: no
       when: not stlib.stat.exists and not rpmlib.stat.exists
     - name: Set fact lsdir
       set_fact:
         lsdir: "{{ dnscryptproxy_libsodium_url | basename }}"
     - name: decompress archive
-      unarchive: src=/root/{{ dnscryptproxy_libsodium_url | basename }} dest=/root/ copy=no
+      unarchive:
+        src: "/root/{{ dnscryptproxy_libsodium_url | basename }}"
+        dest: "/root/"
+        mode: '0755'
+        copy: no
     - name: Build libsodium
       shell: "./configure --prefix={{ dnscryptproxy_source_prefix }} && make -j2"
       args:
@@ -51,7 +55,7 @@
     - name: Install libsodium from source
       become: yes
       command: "make install chdir=/root/{{ lsdir[:-7] }}"
-## required for compilation of dnscrypt
+    ## required for compilation of dnscrypt
     - name: ldconfig
       command: ldconfig
   when: not stlib.stat.exists and not rpmlib.stat.exists
@@ -68,7 +72,7 @@
   command: "wget -O /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
   with_items:
     - "{{ dnscryptproxy_url }}"
-#    - "{{ dnscryptproxy_url }}.sig"
+    # - "{{ dnscryptproxy_url }}.sig"
   when: (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '6')
 
 - name: ensure unzip is present for unarchive
@@ -79,7 +83,11 @@
   until: pkg_result is success
 
 - name: decompress archive
-  unarchive: src=/root/{{ dnscryptproxy_url | basename }} dest=/root/ copy=no
+  unarchive:
+    src: "/root/{{ dnscryptproxy_url | basename }}"
+    dest: "/root/"
+    mode: '0755'
+    copy: no
 - name: Set fact dpdir
   set_fact:
     dpdir: "dnscrypt-proxy-{{ dnscryptproxy_url | basename | regex_replace('.zip$', '') }}"
@@ -89,7 +97,7 @@
     chdir: "/root/{{ dpdir }}"
     creates: "/root/{{ dpdir }}/src/proxy/dnscrypt-proxy"
   with_items:
-#    - "autoreconf -i --force"
+    # - "autoreconf -i --force"
     - "aclocal"
     - "autoconf"
     - "autoheader"
@@ -120,6 +128,7 @@
     dest: "{{ dnscryptproxy_source_prefix }}/etc/dnscrypt-proxy.conf"
     regexp: "{{ item.re }}"
     line: "{{ item.l }}"
+    mode: '0644'
     insertafter: "{{ item.i }}"
     backup: yes
   with_items:
@@ -144,6 +153,7 @@
         dest: /lib/systemd/system/dnscrypt-proxy.socket
         regexp: 127.0.0.1
         replace: 127.0.0.2
+        mode: '0644'
         backup: yes
       notify:
         - reload systemd
@@ -155,6 +165,7 @@
         dest: "{{ dnscryptproxy_source_prefix }}/etc/dnscrypt-proxy.conf"
         regexp: "{{ item.re }}"
         line: "{{ item.rep }}"
+        mode: '0644'
         backup: yes
       with_items:
         - { re: "^Daemonize .*", rep: "Daemonize yes" }

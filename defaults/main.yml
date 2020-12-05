@@ -4,7 +4,7 @@ dnscryptproxy_v: 2
 
 dnscryptproxyv2_url: 'https://github.com/DNSCrypt/dnscrypt-proxy/releases/download/2.0.36/dnscrypt-proxy-linux_x86_64-2.0.36.tar.gz'
 dnscryptproxyv2_hash: 'sha256:2e01552c83accb02a7b7d768863a12733966066c67742bac5665fdb2df10abd7'
-#dnscryptproxyv2_listen: "['127.0.0.1:53', '[::1]:53']"
+# dnscryptproxyv2_listen: "['127.0.0.1:53', '[::1]:53']"
 dnscryptproxyv2_listen: "['127.0.0.2:53']"
 
 dnscrypt_proxy_blacklist: https://download.dnscrypt.info/blacklists/domains/mybase.txt
@@ -17,7 +17,7 @@ dnscrypt_proxy_config: []
 #  - { section: 'query_log', option: 'file', value: '/var/log/dnscrypt-proxy2-query.log' }
 #  - { section: 'nx_log', option: 'file', value: '/var/log/dnscrypt-proxy2-nx.log' }
 
-#dnscryptproxy_v: 1
+# dnscryptproxy_v: 1
 
 ## maybe ovveriden by distribution values (from their packages)
 dnscryptproxy_user: dnscrypt

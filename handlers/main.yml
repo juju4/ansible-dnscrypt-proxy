@@ -2,10 +2,10 @@
 
 - name: restart dnscrypt
   service: name=dnscrypt-proxy state=restarted
-  when:  ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
+  when: ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
 - name: restart apparmor
   service: name=apparmor state=restarted
-  when:  ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
+  when: ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
 
 - name: ldconfig
   command: ldconfig

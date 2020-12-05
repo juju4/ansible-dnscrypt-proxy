@@ -25,7 +25,7 @@
 
     - name: Source install
       include: source.yml
-    #  when: ansible_distribution != 'Ubuntu'
+      # when: ansible_distribution != 'Ubuntu'
       when: ansible_os_family == "RedHat"
   when: dnscryptproxy_v|int == 1
 
@@ -44,6 +44,7 @@
         dest: /etc/systemd/resolved.conf
         regexp: "{{ item.re }}"
         line: "{{ item.l }}"
+        mode: '0644'
         backup: yes
       with_items:
         - { re: '^DNS=.*', l: 'DNS=127.0.0.2' }
@@ -57,6 +58,7 @@
   lineinfile:
     dest: /etc/resolv.conf
     line: "nameserver 127.0.0.2"
+    mode: '0644'
     insertbefore: BOF
     backup: yes
   when: >

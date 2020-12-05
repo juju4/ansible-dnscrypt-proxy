@@ -17,6 +17,7 @@
     dest: /etc/ld.so.conf.d/usr_local_lib.conf
     regexp: '^/usr/local/lib'
     line: /usr/local/lib
+    mode: '0644'
     create: yes
   notify:
     - ldconfig

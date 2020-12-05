@@ -1,7 +1,7 @@
 ---
 driver:
   name: docker
-## https://github.com/test-kitchen/kitchen-docker/issues/54
+  ## https://github.com/test-kitchen/kitchen-docker/issues/54
   use_sudo: false
 
 transport:
@@ -11,13 +11,13 @@ provisioner:
   name: ansible_playbook
   roles_path: ../
   hosts: all
-#  ansible_verbose: true
+  # ansible_verbose: true
   ansible_verbose: false
   ansible_verbosity: 4
   ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
-#  require_chef_omnibus: false
+  # require_chef_omnibus: false
   require_ansible_omnibus: true
-#  require_chef_for_busser: false
+  # require_chef_for_busser: false
   enable_yum_epel: true
   ansible_connection: ssh
 
@@ -27,13 +27,6 @@ platforms:
   - name: ubuntu-14.04
   - name: centos-8
   - name: centos-7
-### epel mirror issue. see readme
-#  - name: centos-6
-### Ansible 2.2+/cryptography: https://github.com/ansible/ansible/issues/276
-#    provisioner:
-#      ansible_version: 2.1.2.0
-## tool chain kitchen and image need customization... nok currently
-#  - name: alpine-3.7
 
 suites:
   - name: default

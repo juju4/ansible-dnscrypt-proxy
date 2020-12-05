@@ -14,7 +14,7 @@
         version: 1.6.0
       register: pkg_result
       until: pkg_result is success
-# 2.1.1: error in cryptography setup command: Invalid environment marker: python_version < '3'
+    # 2.1.1: error in cryptography setup command: Invalid environment marker: python_version < '3'
     - name: use older cryptography, pyopenssl
       pip:
         name: "{{ item.n }}"

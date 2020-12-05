@@ -8,6 +8,11 @@
     delaycompress
     compress
     sharedscripts
+    postrotate
+       if invoke-rc.d dnscrypt-proxy status > /dev/null 2>&1; then \
+          invoke-rc.d dnscrypt-proxy restart > /dev/null 2>&1; \
+       fi;
+    endscript
     create 644 root {% if ansible_distribution == 'Ubuntu' %}syslog{% else %}root{% endif %}
 
     su root {% if ansible_distribution == 'Ubuntu' %}syslog{% else %}root{% endif %}
