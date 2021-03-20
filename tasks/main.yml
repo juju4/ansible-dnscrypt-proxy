@@ -10,7 +10,8 @@
   include_vars: "CentOS-{{ ansible_distribution_version.split('.')[0] }}.yml"
   when: ansible_os_family == "RedHat"
 
-- debug: var=dnscryptproxy_v
+- name: Debug | dnscryptproxy version
+  debug: var=dnscryptproxy_v
 
 - block:
     - include: python-sni-workaround.yml
