@@ -1,0 +1,78 @@
+#!/bin/sh
+
+export export PATH=/usr/bin:/bin
+umask 077
+
+date=$(date +%Y%m%d)
+echo
+echo
+echo "      DNSCRYPT-PROXY2 DAILY REPORT ${date}"
+echo
+echo
+
+f=/var/log/dnscrypt-proxy2-query.log
+if [ -f "${f}" ]; then
+  echo ${f}
+
+  echo "*** per source IP"
+  cut -f 2 "${f}" | sort | uniq -c | sort -nr
+  echo
+  echo "*** per dns query type"
+  cut -f 4 "${f}" | sort | uniq -c | sort -nr
+  echo
+  echo "*** per result"
+  cut -f 5 "${f}" | sort | uniq -c | sort -nr
+  echo
+  echo "*** per domain, top/flop"
+  cut -f 3 "${f}" | sort | uniq -c | sort -nr | head -10
+  cut -f 3 "${f}" | sort | uniq -c | sort -nr | tail -10
+  echo
+  echo
+
+  echo "*** REJECT top"
+  grep REJECT "${f}" | cut -f 3 | sort | uniq -c | sort -nr| head -10
+  echo
+  echo "*** SERVFAIL"
+  grep SERVFAIL "${f}" | cut -f 2,3,4,5,7
+  echo
+  echo "*** TXT top"
+  grep TXT "${f}" | cut -f 2,3,4,5,7 | head -20
+  echo
+  echo "*** SRV top"
+  grep SRV "${f}" | cut -f 2,3,4,5,7 | head -20
+  echo
+  echo
+fi
+
+f2=/var/log/dnscrypt-proxy2-blacklist.log
+if [ -f "${f2}" ]; then
+  echo ${f2}
+
+  echo "*** per source IP"
+  cut -f 2 "${f2}" | sort | uniq -c | sort -nr
+  echo
+  echo "*** per domain, top/flop"
+  cut -f 3 "${f2}" | sort | uniq -c | sort -nr | head -10
+  cut -f 3 "${f2}" | sort | uniq -c | sort -nr | tail -10
+  echo
+  echo
+fi
+
+f3=/var/log/dnscrypt-proxy2-nx.log
+if [ -f "${f3}" ]; then
+  echo ${f3}
+
+  echo "*** per source IP"
+  cut -f 2 "${f3}" | sort | uniq -c | sort -nr
+  echo
+  echo "*** per dns query type"
+  cut -f 4 "${f3}" | sort | uniq -c | sort -nr
+  echo
+  echo "*** per domain, top/flop"
+  cut -f 3 "${f3}" | sort | uniq -c | sort -nr | head -10
+  cut -f 3 "${f3}" | sort | uniq -c | sort -nr | tail -10
+  echo
+  echo
+fi
+
+find /var/tmp -name 'dnscrypt-proxy2-report-*' -mtime +10 -exec rm {} \; 2>/dev/null

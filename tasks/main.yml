@@ -71,6 +71,9 @@
 - name: add some nrpe commands for monitoring
   copy: src=dnscrypt-nrpe.cfg dest=/etc/nagios/nrpe.d/dnscrypt-nrpe.cfg mode=0644
 
+- include: reporting.yml
+  when: dnscrypt_reporting
+
 - include: systemd.yml
 - include: logrotate.yml
 

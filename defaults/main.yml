@@ -35,3 +35,7 @@ dnscryptproxy_libsodium_checksum: '0cc3dae33e642cc187b5ceb467e0ad0e1b51dcba577de
 dnscryptproxy_url: 'https://github.com/DNSCrypt/dnscrypt-proxy/archive/a64a9d40fafbaaa28b9e7166a167d036d2e776e9.zip'
 dnscryptproxy_hash: 'sha256:7627694f883603b83ce3bd8f84b77a17d6c7d323e98835168fc16db09168c2e3'
 dnscryptproxy_source_prefix: '/usr/local'
+
+dnscrypt_reporting: true
+dnscrypt_reporting_template: dnscrypt_report.sh
+dnscrypt_reporting_dest: /var/tmp
