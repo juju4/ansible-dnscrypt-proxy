@@ -12,6 +12,6 @@ expect fork
 script
   test -f /etc/default/dnscrypt && . /etc/default/dnscrypt
 
-  echo "/usr/local/sbin/dnscrypt-proxy started with options: $OPTIONS"  
+  echo "/usr/local/sbin/dnscrypt-proxy started with options: $OPTIONS"
   exec /usr/local/sbin/dnscrypt-proxy $OPTIONS /usr/local/etc/dnscrypt-proxy.conf
 end script

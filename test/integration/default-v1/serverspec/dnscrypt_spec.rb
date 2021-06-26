@@ -3,10 +3,10 @@ require 'serverspec'
 # Required by serverspec
 set :backend, :exec
 
-describe service('dnscrypt-proxy'), :if => os[:family] == 'ubuntu' do  
+describe service('dnscrypt-proxy'), :if => os[:family] == 'ubuntu' do
   it { should be_enabled   }
   it { should be_running   }
-end  
+end
 
 describe process("dnscrypt-proxy"), :if => os[:family] == 'ubuntu' && os[:release] == '16.04' do
 
