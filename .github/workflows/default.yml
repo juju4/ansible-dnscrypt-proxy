@@ -70,3 +70,8 @@ jobs:
           netstat -anp
           ss -nlp
         continue-on-error: true
+      - name: After script - report
+        run: |
+          sudo -u syslog /usr/local/scripts/dnscrypt_report.sh
+        if: ${{ always() }}
+        continue-on-error: true
