@@ -69,6 +69,7 @@ jobs:
           ls -la /var/log/dnscrypt-proxy*
           netstat -anp
           ss -nlp
+        if: ${{ always() }}
         continue-on-error: true
       - name: After script - report
         run: |
