@@ -19,7 +19,7 @@
 
 {% if dnscrypt_reporting %}
     prerotate
-        test ! -x /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} || sudo -u syslog /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} 2>&1 | sudo -u syslog tee {{ dnscrypt_reporting_dest }}/dnscrypt-report-`date +%Y%m%d` >/dev/null
+        test ! -x /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} || sudo -u syslog /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} 2>&1 >/dev/null
     endscript
 {% endif %}
 }
