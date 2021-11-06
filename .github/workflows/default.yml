@@ -58,7 +58,7 @@ jobs:
           cd $GITHUB_WORKSPACE/juju4.dnscryptproxy && ansible-playbook -i localhost, --connection=local --become -vvv test/integration/default/default.yml | tee /tmp/idempotency.log | grep -q 'changed=0.*failed=0'  && (echo 'Idempotence test: pass' && exit 0)  || (echo 'Idempotence test: fail' && cat /tmp/idempotency.log && exit 1)
       - name: On failure
         run: |
-          ls -l /usr/bin/ | egrep "(python|pip|ansible)
+          ls -l /usr/bin/ | egrep "(python|pip|ansible)"
           pip3 freeze
           journalctl -xe --no-pager
         if: env.WORKFLOW_CONCLUSION == 'failure'  # notify only if failure
