@@ -45,19 +45,27 @@
         dest: "/root/"
         mode: '0755'
         copy: no
-    - name: Build libsodium
-      shell: "./configure --prefix={{ dnscryptproxy_source_prefix }} && make -j2"
+    - name: Configure libsodium
+      command: "./configure --prefix={{ dnscryptproxy_source_prefix }}"
       args:
         chdir: "/root/{{ lsdir[:-7] }}"
-      notify:
-        - ldconfig
-      when: not stlib.stat.exists and not rpmlib.stat.exists
+        creates: "/root/{{ lsdir[:-7] }}/Makefile"
+    - name: Build libsodium
+      command: "make -j2"
+      args:
+        chdir: "/root/{{ lsdir[:-7] }}"
+        creates: "/root/{{ lsdir[:-7] }}/libsodium.so"
     - name: Install libsodium from source
       become: yes
-      command: "make install chdir=/root/{{ lsdir[:-7] }}"
+      command: make install
+      args:
+        chdir: "/root/{{ lsdir[:-7] }}"
+        creates: /usr/local/lib/libsodium.so
+      notify:
+        - ldconfig
     ## required for compilation of dnscrypt
-    - name: ldconfig
-      command: ldconfig
+    - name: Flush handlers
+      meta: flush_handlers
   when: not stlib.stat.exists and not rpmlib.stat.exists
 
 - name: download dnscrypt archive
