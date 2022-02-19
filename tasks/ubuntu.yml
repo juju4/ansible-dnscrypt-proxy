@@ -127,5 +127,5 @@
 - name: ensure resolvers directory exists
   file: dest=/usr/share/dnscrypt-proxy state=directory mode=0755
 
-- include: resolvers-update.yml
+- import_tasks: resolvers-update.yml
   when: ansible_distribution_release == 'xenial' and dnscrypt_resolvers_update

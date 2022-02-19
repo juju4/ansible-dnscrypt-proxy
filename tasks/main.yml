@@ -14,23 +14,23 @@
   debug: var=dnscryptproxy_v
 
 - block:
-    - include: python-sni-workaround.yml
+    - import_tasks: python-sni-workaround.yml
 
     - name: Ubuntu | ppa install
-      include: ubuntu.yml
+      import_tasks: ubuntu.yml
       when: ansible_distribution == 'Ubuntu' and not dnscryptproxy_force_source
 
     - name: Redhat | requirements
-      include: redhat.yml
+      import_tasks: redhat.yml
       when: ansible_os_family == "RedHat"
 
     - name: Source install
-      include: source.yml
+      import_tasks: source.yml
       # when: ansible_distribution != 'Ubuntu'
       when: ansible_os_family == "RedHat"
   when: dnscryptproxy_v|int == 1
 
-- include: v2.yml
+- import_tasks: v2.yml
   when: dnscryptproxy_v|int == 2
 
 - name: check if systemd-resolved is present
@@ -71,10 +71,10 @@
 - name: add some nrpe commands for monitoring
   copy: src=dnscrypt-nrpe.cfg dest=/etc/nagios/nrpe.d/dnscrypt-nrpe.cfg mode=0644
 
-- include: reporting.yml
+- import_tasks: reporting.yml
   when: dnscrypt_reporting
 
-- include: systemd.yml
-- include: logrotate.yml
+- import_tasks: systemd.yml
+- import_tasks: logrotate.yml
 
 ## http://bluepilltech.blogspot.ca/2015/05/configuring-openbsd-57s-default-unbound.html

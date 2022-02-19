@@ -7,7 +7,7 @@
         state: present
       register: pkg_result
       until: pkg_result is success
-    - include: pip-upgrade.yml
+    - import_tasks: pip-upgrade.yml
     - name: upgrade python-six to latest with pip - 1.6+ required for ndg-httpsclient
       pip:
         name: six

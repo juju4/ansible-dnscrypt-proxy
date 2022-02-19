@@ -65,7 +65,7 @@
     backup: yes
   with_items: "{{ dnscrypt_proxy_config }}"
 
-- include: v2-blacklist.yml
+- import_tasks: v2-blacklist.yml
   when: dnscrypt_proxy_blacklist|string
 
 - name: Install dnscrypt-proxy2 service
