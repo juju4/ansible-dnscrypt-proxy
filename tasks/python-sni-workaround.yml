@@ -2,21 +2,21 @@
 
 - block:
     - name: ensure python pip is present
-      package:
+      ansible.builtin.package:
         name: "{{ python_sni }}"
         state: present
       register: pkg_result
       until: pkg_result is success
     - import_tasks: pip-upgrade.yml
     - name: upgrade python-six to latest with pip - 1.6+ required for ndg-httpsclient
-      pip:
+      ansible.builtin.pip:
         name: six
         version: 1.6.0
       register: pkg_result
       until: pkg_result is success
     # 2.1.1: error in cryptography setup command: Invalid environment marker: python_version < '3'
     - name: use older cryptography, pyopenssl
-      pip:
+      ansible.builtin.pip:
         name: "{{ item.n }}"
         version: "{{ item.v }}"
       with_items:
@@ -26,7 +26,7 @@
       until: pkg_result is success
 
     - name: old python - SNI workaround
-      pip:
+      ansible.builtin.pip:
         name:
           - urllib3
           - ndg-httpsclient

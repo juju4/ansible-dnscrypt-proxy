@@ -4,14 +4,14 @@
 ## http://dnscrypt.org/#dnscrypt-proxy
 
 - name: Include version-specific variables for Ubuntu.
-  include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  ansible.builtin.include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
   when: ansible_distribution == 'Ubuntu'
 - name: Include version-specific variables for RedHat
-  include_vars: "CentOS-{{ ansible_distribution_version.split('.')[0] }}.yml"
+  ansible.builtin.include_vars: "CentOS-{{ ansible_distribution_version.split('.')[0] }}.yml"
   when: ansible_os_family == "RedHat"
 
 - name: Debug | dnscryptproxy version
-  debug: var=dnscryptproxy_v
+  ansible.builtin.debug: var=dnscryptproxy_v
 
 - block:
     - import_tasks: python-sni-workaround.yml
@@ -34,14 +34,14 @@
   when: dnscryptproxy_v|int == 2
 
 - name: check if systemd-resolved is present
-  stat:
+  ansible.builtin.stat:
     path: /etc/systemd/resolved.conf
   register: systemdresolved
 
 # https://wiki.archlinux.org/index.php/Systemd-resolved
 - block:
     - name: Update systemd-resolved configuration to use dnscrypt-proxy only
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: /etc/systemd/resolved.conf
         regexp: "{{ item.re }}"
         line: "{{ item.l }}"
@@ -56,7 +56,7 @@
 
 ## Not possible in docker testing, https://github.com/docker/docker/issues/1297
 - name: enable dnscrypt in resolv.conf
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/resolv.conf
     line: "nameserver 127.0.0.2"
     mode: '0644'
@@ -67,9 +67,9 @@
     not systemdresolved.stat.exists
 
 - name: Ensure nrpe.d dir exists
-  file: dest=/etc/nagios/nrpe.d state=directory mode=0755
+  ansible.builtin.file: dest=/etc/nagios/nrpe.d state=directory mode=0755
 - name: add some nrpe commands for monitoring
-  copy: src=dnscrypt-nrpe.cfg dest=/etc/nagios/nrpe.d/dnscrypt-nrpe.cfg mode=0644
+  ansible.builtin.copy: src=dnscrypt-nrpe.cfg dest=/etc/nagios/nrpe.d/dnscrypt-nrpe.cfg mode=0644
 
 - import_tasks: reporting.yml
   when: dnscrypt_reporting

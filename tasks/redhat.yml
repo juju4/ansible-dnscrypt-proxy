@@ -1,19 +1,19 @@
 ---
 
 - name: install the 'Development tools' package group
-  yum: name="@Development tools" state=present
+  ansible.builtin.yum: name="@Development tools" state=present
   register: pkg_result
   until: pkg_result is success
 
 - name: yum | install libsodium
-  yum:
+  ansible.builtin.yum:
     name: "{{ dnscrypt_pkg }}"
     state: present
   register: pkg_result
   until: pkg_result is success
 
 - name: update ldconfig path search
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/ld.so.conf.d/usr_local_lib.conf
     regexp: '^/usr/local/lib'
     line: /usr/local/lib

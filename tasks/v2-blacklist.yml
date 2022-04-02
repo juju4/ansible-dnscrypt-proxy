@@ -19,38 +19,38 @@
     backup: yes
 
 - name: Ensure blacklist cache directory exists
-  file:
+  ansible.builtin.file:
     dest: "{{ dnscrypt_proxy_blacklist_path }}"
     state: directory
     mode: '0755'
     owner: nobody
 
 - name: Debian | ensure cron is installed
-  apt: name=cron state=present
+  ansible.builtin.apt: name=cron state=present
   when: ansible_os_family == 'Debian'
   register: pkg_result
   until: pkg_result is success
 
 - name: RedHat | ensure cron is installed
-  yum: name=crontabs state=present
+  ansible.builtin.yum: name=crontabs state=present
   when: ansible_os_family == "RedHat"
   register: pkg_result
   until: pkg_result is success
 
 - name: Ensure curl package is present for cron
-  package:
+  ansible.builtin.package:
     name: curl
     state: present
 
 - name: set file for exclusions
-  template:
+  ansible.builtin.template:
     src: "{{ dnscrypt_proxy_blacklist_exclude_template }}.j2"
     dest: "{{ dnscrypt_proxy_blacklist_exclude }}"
     mode: '0644'
     backup: yes
 
 - name: Ensure schedule task to retrieve blacklist
-  cron:
+  ansible.builtin.cron:
     name: dnscrypt blacklist update
     minute: '0'
     hour: '2'
@@ -60,12 +60,12 @@
     cron_file: ansible_dnscrypt-proxy2_blacklist
 
 - name: Check if blacklist file
-  stat:
+  ansible.builtin.stat:
     path: "{{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}"
   register: blacklistf
 
 - name: Ensure initial blacklist exists
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ dnscrypt_proxy_blacklist }}"
     dest: "{{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}"
     owner: nobody

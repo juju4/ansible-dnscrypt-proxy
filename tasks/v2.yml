@@ -1,7 +1,7 @@
 ---
 
 - name: download dnscrypt v2
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ dnscryptproxyv2_url }}"
     dest: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
     mode: '0644'
@@ -11,13 +11,13 @@
   until: dl_result is success
 
 - name: Ensure /opt/dnscrypt-proxy2 exists
-  file:
+  ansible.builtin.file:
     dest: /opt/dnscrypt-proxy2
     state: directory
     mode: '0755'
 
 - name: decompress archive
-  unarchive:
+  ansible.builtin.unarchive:
     src: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
     dest: /opt/dnscrypt-proxy2
     mode: '0755'
@@ -25,12 +25,12 @@
     creates: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy
 
 - name: Check if existing config
-  stat:
+  ansible.builtin.stat:
     path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
   register: cfg
 
 - name: Initiate config
-  copy:
+  ansible.builtin.copy:
     src: /opt/dnscrypt-proxy2/linux-x86_64/example-dnscrypt-proxy.toml
     dest: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
     mode: '0644'
@@ -69,7 +69,7 @@
   when: dnscrypt_proxy_blacklist|string
 
 - name: Install dnscrypt-proxy2 service
-  command: ./dnscrypt-proxy -service install
+  ansible.builtin.command: ./dnscrypt-proxy -service install
   args:
     chdir: /opt/dnscrypt-proxy2/linux-x86_64
     creates: /etc/systemd/system/dnscrypt-proxy.service
@@ -78,5 +78,5 @@
   # command: ./dnscrypt-proxy -service start
   # args:
   #   chdir: /opt/dnscrypt-proxy2/linux-x86_64
-  service: name=dnscrypt-proxy state=started
+  ansible.builtin.service: name=dnscrypt-proxy state=started
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")

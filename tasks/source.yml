@@ -8,29 +8,29 @@
 #      become_user: "{{ dnscryptproxy_user }}"
 
 - name: source build dependencies packages install
-  package: name={{ dnscryptproxy_src_deps }} state=present
+  ansible.builtin.package: name={{ dnscryptproxy_src_deps }} state=present
   register: pkg_result
   until: pkg_result is success
 
 - block:
     - name: source build dependencies packages install with systemd
-      package: name={{ dnscryptproxy_src_systemd_deps }} state=present
+      ansible.builtin.package: name={{ dnscryptproxy_src_systemd_deps }} state=present
       register: pkg_result
       until: pkg_result is success
     - name: Set fact configure_args
-      set_fact:
+      ansible.builtin.set_fact:
         configure_args: "--with-systemd"
   when: ansible_service_mgr == 'systemd'
 
 - name: Check if /usr/lib64/libsodium.so.13 exists
-  stat: path=/usr/lib64/libsodium.so.13
+  ansible.builtin.stat: path=/usr/lib64/libsodium.so.13
   register: rpmlib
 - name: Check if /usr/local/lib/libsodium.so exists
-  stat: path=/usr/local/lib/libsodium.so
+  ansible.builtin.stat: path=/usr/local/lib/libsodium.so
   register: stlib
 - block:
     - name: download libsodium archive
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ dnscryptproxy_libsodium_url }}"
         dest: "/root/{{ dnscryptproxy_libsodium_url | basename }}"
         checksum: "sha256:{{ dnscryptproxy_libsodium_checksum }}"
@@ -38,27 +38,27 @@
         # validate_certs: no
       when: not stlib.stat.exists and not rpmlib.stat.exists
     - name: Set fact lsdir
-      set_fact:
+      ansible.builtin.set_fact:
         lsdir: "{{ dnscryptproxy_libsodium_url | basename }}"
     - name: decompress archive
-      unarchive:
+      ansible.builtin.unarchive:
         src: "/root/{{ dnscryptproxy_libsodium_url | basename }}"
         dest: "/root/"
         mode: '0755'
         copy: no
     - name: Configure libsodium
-      command: "./configure --prefix={{ dnscryptproxy_source_prefix }}"
+      ansible.builtin.command: "./configure --prefix={{ dnscryptproxy_source_prefix }}"
       args:
         chdir: "/root/{{ lsdir[:-7] }}"
         creates: "/root/{{ lsdir[:-7] }}/Makefile"
     - name: Build libsodium
-      command: "make -j2"
+      ansible.builtin.command: "make -j2"
       args:
         chdir: "/root/{{ lsdir[:-7] }}"
         creates: "/root/{{ lsdir[:-7] }}/libsodium.so"
     - name: Install libsodium from source
       become: yes
-      command: make install
+      ansible.builtin.command: make install
       args:
         chdir: "/root/{{ lsdir[:-7] }}"
         creates: /usr/local/lib/libsodium.so
@@ -66,11 +66,11 @@
         - ldconfig
     ## required for compilation of dnscrypt
     - name: Flush handlers
-      meta: flush_handlers
+      ansible.builtin.meta: flush_handlers
   when: not stlib.stat.exists and not rpmlib.stat.exists
 
 - name: download dnscrypt archive
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ dnscryptproxy_url }}"
     dest: "/root/{{ dnscryptproxy_url | basename }}"
     mode: '0644'
@@ -78,30 +78,30 @@
     backup: yes
   when: not (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '6')
 - name: download dnscrypt archive - centos6 wget/Python SNI
-  command: "wget -O /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
+  ansible.builtin.command: "wget -O /root/{{ item | basename }} {{ item }} creates=/root/{{ item | basename }}"
   with_items:
     - "{{ dnscryptproxy_url }}"
     # - "{{ dnscryptproxy_url }}.sig"
   when: (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '6')
 
 - name: ensure unzip is present for unarchive
-  package:
+  ansible.builtin.package:
     name: unzip
     state: present
   register: pkg_result
   until: pkg_result is success
 
 - name: decompress archive
-  unarchive:
+  ansible.builtin.unarchive:
     src: "/root/{{ dnscryptproxy_url | basename }}"
     dest: "/root/"
     mode: '0755'
     copy: no
 - name: Set fact dpdir
-  set_fact:
+  ansible.builtin.set_fact:
     dpdir: "dnscrypt-proxy-{{ dnscryptproxy_url | basename | regex_replace('.zip$', '') }}"
 - name: Build dnscrypt-proxy
-  command: "{{ item }}"
+  ansible.builtin.command: "{{ item }}"
   args:
     chdir: "/root/{{ dpdir }}"
     creates: "/root/{{ dpdir }}/src/proxy/dnscrypt-proxy"
@@ -115,25 +115,25 @@
     - "make -j2"
 - name: Install dnscrypt-proxy
   become: yes
-  command: "make install"
+  ansible.builtin.command: "make install"
   args:
     chdir: "/root/{{ dpdir }}"
     creates: "{{ dnscryptproxy_source_prefix }}/sbin/dnscrypt-proxy"
 
 - name: Set fact dnscryptproxy_user
-  set_fact:
+  ansible.builtin.set_fact:
     dnscryptproxy_user: _dnscrypt-proxy
 - name: create dnscrypt user '{{ dnscryptproxy_user }}'
-  user: name={{ dnscryptproxy_user }} comment="dnscrypt user" system=yes
+  ansible.builtin.user: name={{ dnscryptproxy_user }} comment="dnscrypt user" system=yes
 
 - name: add separate script to manage multi dnscrypt server
-  copy: src=dnscrypt-proxy-multi.sh dest=/usr/local/bin/dnscrypt-proxy-multi.sh mode=0755
+  ansible.builtin.copy: src=dnscrypt-proxy-multi.sh dest=/usr/local/bin/dnscrypt-proxy-multi.sh mode=0755
 
 - name: ensure log directory exists
-  file: path=/var/log/dnscrypt mode=0755 owner={{ dnscryptproxy_user }} state=directory
+  ansible.builtin.file: path=/var/log/dnscrypt mode=0755 owner={{ dnscryptproxy_user }} state=directory
 
 - name: review configuration
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: "{{ dnscryptproxy_source_prefix }}/etc/dnscrypt-proxy.conf"
     regexp: "{{ item.re }}"
     line: "{{ item.l }}"
@@ -147,7 +147,7 @@
 
 - block:
     - name: ensure dnscrypt-proxy systemd service file is present
-      copy:
+      ansible.builtin.copy:
         src: "/root/{{ dpdir }}/{{ item }}"
         dest: "/lib/systemd/system/{{ item }}"
         mode: '0644'
@@ -158,7 +158,7 @@
       notify:
         - reload systemd
     - name: use 127.0.0.2 as binding interface
-      replace:
+      ansible.builtin.replace:
         dest: /lib/systemd/system/dnscrypt-proxy.socket
         regexp: 127.0.0.1
         replace: 127.0.0.2
@@ -170,7 +170,7 @@
 
 - block:
     - name: enable daemon mode in configuration
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: "{{ dnscryptproxy_source_prefix }}/etc/dnscrypt-proxy.conf"
         regexp: "{{ item.re }}"
         line: "{{ item.rep }}"
@@ -185,7 +185,7 @@
 
 - block:
     - name: install init script
-      template:
+      ansible.builtin.template:
         src: init-dnscrypt-proxy.j2
         dest: /etc/init.d/dnscrypt-proxy
         mode: '0755'
@@ -194,7 +194,7 @@
 
 - block:
     - name: install upstart script
-      template:
+      ansible.builtin.template:
         src: upstart-dnscrypt-proxy.conf.j2
         dest: /etc/init/dnscrypt-proxy.conf
         mode: '0644'
@@ -203,6 +203,6 @@
 
 ## ensure systemd has reload its configuration
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 - name: ensure dnscrypt-proxy service is enabled and started.
-  service: name=dnscrypt-proxy state=started enabled=yes
+  ansible.builtin.service: name=dnscrypt-proxy state=started enabled=yes
