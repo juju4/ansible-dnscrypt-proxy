@@ -34,6 +34,7 @@
         url: "{{ dnscryptproxy_libsodium_url }}"
         dest: "/root/{{ dnscryptproxy_libsodium_url | basename }}"
         checksum: "sha256:{{ dnscryptproxy_libsodium_checksum }}"
+        mode: '0600'
         # validate_certs: no
       when: not stlib.stat.exists and not rpmlib.stat.exists
     - name: Set fact lsdir
