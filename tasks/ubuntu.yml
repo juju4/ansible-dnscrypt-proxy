@@ -83,7 +83,8 @@
   register: checkserver
   changed_when: false
 
-- block:
+- name: Ubuntu trusty, xenial
+  block:
     - name: configure target server
       ansible.builtin.replace:
         dest: /etc/default/dnscrypt-proxy

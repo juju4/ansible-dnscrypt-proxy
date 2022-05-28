@@ -12,7 +12,8 @@
   register: pkg_result
   until: pkg_result is success
 
-- block:
+- name: systemd
+  block:
     - name: source build dependencies packages install with systemd
       ansible.builtin.package: name={{ dnscryptproxy_src_systemd_deps }} state=present
       register: pkg_result
@@ -28,7 +29,8 @@
 - name: Check if /usr/local/lib/libsodium.so exists
   ansible.builtin.stat: path=/usr/local/lib/libsodium.so
   register: stlib
-- block:
+- name: libsodium
+  block:
     - name: download libsodium archive
       ansible.builtin.get_url:
         url: "{{ dnscryptproxy_libsodium_url }}"
@@ -145,7 +147,8 @@
   notify:
     - restart dnscrypt
 
-- block:
+- name: systemd
+  block:
     - name: ensure dnscrypt-proxy systemd service file is present
       ansible.builtin.copy:
         src: "/root/{{ dpdir }}/{{ item }}"

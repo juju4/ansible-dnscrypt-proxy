@@ -13,7 +13,8 @@
 - name: Debug | dnscryptproxy version
   ansible.builtin.debug: var=dnscryptproxy_v
 
-- block:
+- name: dnscrypt v1
+  block:
     - import_tasks: python-sni-workaround.yml
 
     - name: Ubuntu | ppa install
@@ -39,7 +40,8 @@
   register: systemdresolved
 
 # https://wiki.archlinux.org/index.php/Systemd-resolved
-- block:
+- name: systemd-resolved
+  block:
     - name: Update systemd-resolved configuration to use dnscrypt-proxy only
       ansible.builtin.lineinfile:
         dest: /etc/systemd/resolved.conf

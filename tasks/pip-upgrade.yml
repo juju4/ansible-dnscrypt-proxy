@@ -17,7 +17,8 @@
   ansible.builtin.debug: var=pipv.stdout
 
 ## does not seem to be handled well by ansible pip module
-- block:
+- name: old pip
+  block:
 
     - name: upgrade pip to latest
       ansible.builtin.command: pip install --upgrade pip
