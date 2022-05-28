@@ -171,7 +171,8 @@
         - reload systemd
   when: ansible_service_mgr == 'systemd'
 
-- block:
+- name: Non-systemd service manager
+  block:
     - name: enable daemon mode in configuration
       ansible.builtin.lineinfile:
         dest: "{{ dnscryptproxy_source_prefix }}/etc/dnscrypt-proxy.conf"
@@ -186,7 +187,8 @@
         - restart dnscrypt
   when: ansible_service_mgr != 'systemd'
 
-- block:
+- name: systemd service manager
+  block:
     - name: install init script
       ansible.builtin.template:
         src: init-dnscrypt-proxy.j2
@@ -195,7 +197,8 @@
         backup: yes
   when: ansible_service_mgr != 'systemd' and ansible_distribution_release != 'trusty'
 
-- block:
+- name: Upstart service manager
+  block:
     - name: install upstart script
       ansible.builtin.template:
         src: upstart-dnscrypt-proxy.conf.j2

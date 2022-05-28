@@ -111,7 +111,8 @@
 - name: check if apparmor config is present
   ansible.builtin.stat: path=/etc/apparmor.d/usr.sbin.dnscrypt-proxy
   register: armor
-- block:
+- name: Apparmor
+  block:
     - name: allow logfile writing inside apparmor
       ansible.builtin.lineinfile:
         dest: /etc/apparmor.d/usr.sbin.dnscrypt-proxy

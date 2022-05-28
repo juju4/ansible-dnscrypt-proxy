@@ -1,8 +1,6 @@
 ---
+warn_list:
+  - schema
 skip_list:
   - '204'  # Lines should be no longer than 160 chars'
   - '303'  # Using command rather than module'
-opt-in:  # Rules that are not used unless manually added to `enable_list`
-  - empty-string-compare
-  - no-log-password
-  - no-same-owner
