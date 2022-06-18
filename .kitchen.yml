@@ -19,6 +19,7 @@ provisioner:
   ansible_connection: ssh
 
 platforms:
+  - name: ubuntu-22.04
   - name: ubuntu-20.04
   - name: ubuntu-18.04
   # FIXME! ansible v2.2, https://github.com/ansible/ansible-modules-core/issues/5459
