@@ -2,7 +2,7 @@
 ## ppa
 ## https://launchpad.net/~anton+/+archive/ubuntu/dnscrypt (most recent)
 ## https://launchpad.net/~xuzhen666/+archive/ubuntu/dnscrypt
-## https://launchpad.net/~shnatsel/+archive/ubuntu/dnscrypt (officialy discontinued)
+## https://launchpad.net/~shnatsel/+archive/ubuntu/dnscrypt (officially discontinued)
 - name: add dnscrypt ppa
   ansible.builtin.apt_repository: repo='ppa:anton+/dnscrypt'
   when: ansible_distribution_release == 'trusty'
