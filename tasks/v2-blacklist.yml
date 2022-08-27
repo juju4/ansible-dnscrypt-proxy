@@ -42,7 +42,7 @@
     name: curl
     state: present
 
-- name: set file for exclusions
+- name: Set file for exclusions
   ansible.builtin.template:
     src: "{{ dnscrypt_proxy_blacklist_exclude_template }}.j2"
     dest: "{{ dnscrypt_proxy_blacklist_exclude }}"

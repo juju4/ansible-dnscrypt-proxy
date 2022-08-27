@@ -15,13 +15,13 @@
 
 - import_tasks: v2.yml
 
-- name: check if systemd-resolved is present
+- name: Check if systemd-resolved is present
   ansible.builtin.stat:
     path: /etc/systemd/resolved.conf
   register: systemdresolved
 
 # https://wiki.archlinux.org/index.php/Systemd-resolved
-- name: systemd-resolved
+- name: Systemd-resolved
   block:
     - name: Update systemd-resolved configuration to use dnscrypt-proxy only
       ansible.builtin.lineinfile:
@@ -38,7 +38,7 @@
   when: systemdresolved.stat.exists
 
 ## Not possible in docker testing, https://github.com/docker/docker/issues/1297
-- name: enable dnscrypt in resolv.conf
+- name: Enable dnscrypt in resolv.conf
   ansible.builtin.lineinfile:
     dest: /etc/resolv.conf
     line: "nameserver 127.0.0.2"
@@ -51,7 +51,7 @@
 
 - name: Ensure nrpe.d dir exists
   ansible.builtin.file: dest=/etc/nagios/nrpe.d state=directory mode=0755
-- name: add some nrpe commands for monitoring
+- name: Add some nrpe commands for monitoring
   ansible.builtin.copy: src=dnscrypt-nrpe.cfg dest=/etc/nagios/nrpe.d/dnscrypt-nrpe.cfg mode=0644
 
 - import_tasks: reporting.yml

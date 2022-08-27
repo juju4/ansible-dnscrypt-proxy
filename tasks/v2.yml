@@ -1,6 +1,6 @@
 ---
 
-- name: download dnscrypt v2
+- name: Download dnscrypt v2
   ansible.builtin.get_url:
     url: "{{ dnscryptproxyv2_url }}"
     dest: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
@@ -16,7 +16,7 @@
     state: directory
     mode: '0755'
 
-- name: decompress archive
+- name: Decompress archive
   ansible.builtin.unarchive:
     src: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
     dest: /opt/dnscrypt-proxy2
