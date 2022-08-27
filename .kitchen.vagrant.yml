@@ -17,10 +17,11 @@ provisioner:
   # name: chef_solo
 
 platforms:
+  - name: ubuntu-22.04
+  - name: ubuntu-20.04
   - name: ubuntu-18.04
-  - name: ubuntu-16.04
-  - name: ubuntu-14.04
-  - name: centos-7.1
+  - name: centos-8
+  - name: centos-7
 
 suites:
   - name: default
@@ -33,12 +34,8 @@ suites:
     run_list:
     attributes:
     includes:
-      - centos-7
-      - ubuntu-18.04
-
-  - name: default-v1
-    run_list:
-    attributes:
+      - centos-8
+      - ubuntu-22.04
 
   - name: dnscrypt-unbound
     run_list:

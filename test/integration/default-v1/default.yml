@@ -1,7 +1,0 @@
----
-
-- hosts: all
-  vars:
-    - dnscryptproxy_v: '1'
-  roles:
-    - juju4.dnscryptproxy

@@ -22,8 +22,6 @@ platforms:
   - name: ubuntu-22.04
   - name: ubuntu-20.04
   - name: ubuntu-18.04
-  # FIXME! ansible v2.2, https://github.com/ansible/ansible-modules-core/issues/5459
-  - name: ubuntu-16.04
   - name: centos-8
   - name: centos-7
 
@@ -32,6 +30,7 @@ suites:
     run_list:
     attributes:
     includes:
+      - ubuntu-22.04
       - ubuntu-20.04
       - ubuntu-18.04
       - centos-8
@@ -42,15 +41,4 @@ suites:
     includes:
       - centos-8
       - centos-7
-      - ubuntu-20.04
-  - name: default-v1
-    run_list:
-    attributes:
-  - name: default-source
-    run_list:
-    includes:
-      - ubuntu-20.04
-      - ubuntu-18.04
-    provisioner:
-      name: ansible_playbook
-      playbook: test/integration/default/source.yml
+      - ubuntu-22.04

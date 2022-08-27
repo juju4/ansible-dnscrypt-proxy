@@ -13,26 +13,7 @@
 - name: Debug | dnscryptproxy version
   ansible.builtin.debug: var=dnscryptproxy_v
 
-- name: dnscrypt v1
-  block:
-    - import_tasks: python-sni-workaround.yml
-
-    - name: Ubuntu | ppa install
-      import_tasks: ubuntu.yml
-      when: ansible_distribution == 'Ubuntu' and not dnscryptproxy_force_source
-
-    - name: Redhat | requirements
-      import_tasks: redhat.yml
-      when: ansible_os_family == "RedHat"
-
-    - name: Source install
-      import_tasks: source.yml
-      # when: ansible_distribution != 'Ubuntu'
-      when: ansible_os_family == "RedHat"
-  when: dnscryptproxy_v|int == 1
-
 - import_tasks: v2.yml
-  when: dnscryptproxy_v|int == 2
 
 - name: check if systemd-resolved is present
   ansible.builtin.stat:

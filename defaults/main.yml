@@ -1,7 +1,5 @@
 ---
 
-dnscryptproxy_v: 2
-
 dnscryptproxyv2_url: 'https://github.com/DNSCrypt/dnscrypt-proxy/releases/download/2.0.36/dnscrypt-proxy-linux_x86_64-2.0.36.tar.gz'
 dnscryptproxyv2_hash: 'sha256:2e01552c83accb02a7b7d768863a12733966066c67742bac5665fdb2df10abd7'
 # dnscryptproxyv2_listen: "['127.0.0.1:53', '[::1]:53']"
