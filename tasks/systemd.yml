@@ -13,5 +13,5 @@
     dest: /etc/systemd/system/dnscrypt-proxy.service.d/override.conf
     mode: '0644'
   notify:
-    - reload systemd
-    - restart dnscrypt
+    - Reload systemd
+    - Restart dnscrypt

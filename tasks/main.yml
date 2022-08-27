@@ -34,7 +34,7 @@
         - { re: '^DNS=.*', l: 'DNS=127.0.0.2' }
         - { re: '^Domains=.*', l: 'Domains=~.' }
       notify:
-        - restart systemd-resolved
+        - Restart systemd-resolved
   when: systemdresolved.stat.exists
 
 ## Not possible in docker testing, https://github.com/docker/docker/issues/1297
