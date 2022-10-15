@@ -11,9 +11,11 @@
   when: ansible_os_family == "RedHat"
 
 - name: Debug | dnscryptproxy version
-  ansible.builtin.debug: var=dnscryptproxy_v
+  ansible.builtin.debug:
+    var: dnscryptproxy_v
 
-- import_tasks: v2.yml
+- name: Import v2
+  ansible.builtin.import_tasks: v2.yml
 
 - name: Check if systemd-resolved is present
   ansible.builtin.stat:
@@ -22,6 +24,7 @@
 
 # https://wiki.archlinux.org/index.php/Systemd-resolved
 - name: Systemd-resolved
+  when: systemdresolved.stat.exists
   block:
     - name: Update systemd-resolved configuration to use dnscrypt-proxy only
       ansible.builtin.lineinfile:
@@ -35,7 +38,6 @@
         - { re: '^Domains=.*', l: 'Domains=~.' }
       notify:
         - Restart systemd-resolved
-  when: systemdresolved.stat.exists
 
 ## Not possible in docker testing, https://github.com/docker/docker/issues/1297
 - name: Enable dnscrypt in resolv.conf
@@ -50,14 +52,23 @@
     not systemdresolved.stat.exists
 
 - name: Ensure nrpe.d dir exists
-  ansible.builtin.file: dest=/etc/nagios/nrpe.d state=directory mode=0755
+  ansible.builtin.file:
+    dest: /etc/nagios/nrpe.d
+    state: directory
+    mode: 0755
 - name: Add some nrpe commands for monitoring
-  ansible.builtin.copy: src=dnscrypt-nrpe.cfg dest=/etc/nagios/nrpe.d/dnscrypt-nrpe.cfg mode=0644
+  ansible.builtin.copy:
+    src: dnscrypt-nrpe.cfg
+    dest: /etc/nagios/nrpe.d/dnscrypt-nrpe.cfg
+    mode: 0644
 
-- import_tasks: reporting.yml
+- name: Import reporting
+  ansible.builtin.import_tasks: reporting.yml
   when: dnscrypt_reporting
 
-- import_tasks: systemd.yml
-- import_tasks: logrotate.yml
+- name: Import systemd
+  ansible.builtin.import_tasks: systemd.yml
+- name: Import logrotate
+  ansible.builtin.import_tasks: logrotate.yml
 
 ## http://bluepilltech.blogspot.ca/2015/05/configuring-openbsd-57s-default-unbound.html

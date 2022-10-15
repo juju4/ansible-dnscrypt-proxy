@@ -38,7 +38,7 @@
   when: not cfg.stat.exists
 
 - name: Configure listen address
-  ini_file:
+  community.general.ini_file:
     path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
     section: null
     option: listen_addresses
@@ -48,7 +48,7 @@
     backup: yes
 
 - name: Configure max_clients
-  ini_file:
+  community.general.ini_file:
     path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
     section: null
     option: max_clients
@@ -56,7 +56,7 @@
     mode: '0644'
 
 - name: Configure other options
-  ini_file:
+  community.general.ini_file:
     path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
     section: "{{ item.section }}"
     option: "{{ item.option }}"
@@ -65,7 +65,8 @@
     backup: yes
   with_items: "{{ dnscrypt_proxy_config }}"
 
-- import_tasks: v2-blacklist.yml
+- name: Import v2-blacklist
+  ansible.builtin.import_tasks: v2-blacklist.yml
   when: dnscrypt_proxy_blacklist|string
 
 - name: Install dnscrypt-proxy2 service
@@ -78,5 +79,7 @@
   # command: ./dnscrypt-proxy -service start
   # args:
   #   chdir: /opt/dnscrypt-proxy2/linux-x86_64
-  ansible.builtin.service: name=dnscrypt-proxy state=started
+  ansible.builtin.service:
+    name: dnscrypt-proxy
+    state: started
   when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")

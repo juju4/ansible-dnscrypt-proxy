@@ -1,7 +1,7 @@
 ---
 
 - name: Configure blacklist
-  ini_file:
+  community.general.ini_file:
     path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
     section: blacklist
     option: blacklist_file
@@ -10,7 +10,7 @@
     backup: yes
 
 - name: Configure blacklist logging
-  ini_file:
+  community.general.ini_file:
     path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
     section: blacklist
     option: log_file
@@ -26,13 +26,17 @@
     owner: nobody
 
 - name: Debian | ensure cron is installed
-  ansible.builtin.apt: name=cron state=present
+  ansible.builtin.apt:
+    name: cron
+    state: present
   when: ansible_os_family == 'Debian'
   register: pkg_result
   until: pkg_result is success
 
 - name: RedHat | ensure cron is installed
-  ansible.builtin.yum: name=crontabs state=present
+  ansible.builtin.yum:
+    name: crontabs
+    state: present
   when: ansible_os_family == "RedHat"
   register: pkg_result
   until: pkg_result is success

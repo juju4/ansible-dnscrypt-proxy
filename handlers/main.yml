@@ -1,10 +1,14 @@
 ---
 
 - name: Restart dnscrypt
-  ansible.builtin.service: name=dnscrypt-proxy state=restarted
+  ansible.builtin.service:
+    name: dnscrypt-proxy
+    state: restarted
   when: ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
 - name: Restart apparmor
-  ansible.builtin.service: name=apparmor state=restarted
+  ansible.builtin.service:
+    name: apparmor
+    state: restarted
   when: ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
 
 - name: LDconfig
@@ -17,6 +21,8 @@
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
 
 - name: Restart systemd-resolved
-  ansible.builtin.service: name=systemd-resolved state=restarted
+  ansible.builtin.service:
+    name: systemd-resolved
+    state: restarted
   when: >
     not (ansible_virtualization_type is defined and (ansible_virtualization_type == "docker"))
