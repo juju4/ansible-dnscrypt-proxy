@@ -11,7 +11,7 @@
     state: restarted
   when: ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker'
 
-- name: LDconfig
+- name: LDconfig  # noqa no-changed-when
   ansible.builtin.command: ldconfig
 
 - name: Reload systemd

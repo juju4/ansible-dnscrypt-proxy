@@ -1,7 +1,8 @@
 ---
 
-- hosts: all
+- name: Test integration playbook
+  hosts: all
   vars:
-    - dnscryptproxy_force_source: true
+    dnscryptproxy_force_source: true
   roles:
     - juju4.dnscryptproxy

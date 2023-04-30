@@ -1,7 +1,8 @@
 ---
 
-- hosts: all
+- name: Test integration playbook
+  hosts: all
   vars:
-    - dnscrypt_proxy_blacklist: ''
+    dnscrypt_proxy_blacklist: ''
   roles:
     - juju4.dnscryptproxy
