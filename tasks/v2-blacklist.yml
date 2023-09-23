@@ -18,6 +18,7 @@
     backup: yes
   when:
     - dnscrypt_proxy_blocklist|string
+    - not (dnscrypt_blocklist_remote_url | length > 0 or dnscrypt_blocklist_local_files | length > 0 or dnscrypt_blockall_default_enable | bool)
     - not dnscrypt_blockall_default_enable | bool
 
 - name: Configure blocklist - multiple files

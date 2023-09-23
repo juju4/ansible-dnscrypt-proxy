@@ -5,7 +5,7 @@ dnscryptproxyv2_hash: 'sha256:eeb5e78e8930cd5ef8e332a4ee2730d02a19bb5097221a56d1
 # dnscryptproxyv2_listen: "['127.0.0.1:53', '[::1]:53']"
 dnscryptproxyv2_listen: "['127.0.0.2:53']"
 
-dnscrypt_proxy_blocklist: https://download.dnscrypt.info/blocklists/domains/mybase.txt
+dnscrypt_proxy_blocklist: ''
 dnscrypt_proxy_blocklist_path: /var/cache/dnscrypt-proxy2
 dnscrypt_proxy_blocklist_exclude_template: exclusions
 dnscrypt_proxy_blocklist_exclude: /var/cache/dnscrypt-proxy2/exclusions
