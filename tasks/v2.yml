@@ -67,7 +67,11 @@
 
 - name: Import v2-blacklist
   ansible.builtin.import_tasks: v2-blacklist.yml
-  when: dnscrypt_proxy_blacklist|string
+  when: |
+    dnscrypt_proxy_blocklist|string or
+    dnscrypt_blocklist_remote_url | length > 0 or dnscrypt_blocklist_local_files | length > 0 or
+    dnscrypt_allowlist_remote_url | length > 0 or dnscrypt_allowlist_local_files | length > 0 or
+    dnscrypt_blockall_default_enable | bool
 
 - name: Install dnscrypt-proxy2 service
   ansible.builtin.command: ./dnscrypt-proxy -service install

@@ -1,29 +1,78 @@
 ---
 
-- name: Configure blacklist
+- name: Configure allow-only blocklist
+  ansible.builtin.copy:
+    dest: "/var/spool/dnscrypt/blocklist_final.txt"
+    content: "*.*"
+    mode: '0644'
+  when:
+    - dnscrypt_blockall_default_enable | bool
+
+- name: Configure blocklist - single file
   community.general.ini_file:
     path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
-    section: blacklist
-    option: blacklist_file
-    value: "'{{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}'"
+    section: blocked_names
+    option: blocked_names_file
+    value: "'{{ dnscrypt_proxy_blocklist_path }}/{{ dnscrypt_proxy_blocklist | basename }}'"
     mode: '0644'
     backup: yes
+  when:
+    - dnscrypt_proxy_blocklist|string
+    - not dnscrypt_blockall_default_enable | bool
 
-- name: Configure blacklist logging
+- name: Configure blocklist - multiple files
   community.general.ini_file:
     path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
-    section: blacklist
+    section: blocked_names
+    option: blocked_names_file
+    value: "'/var/spool/dnscrypt/blocklist_final.txt'"
+    mode: '0644'
+    backup: yes
+  when:
+    - dnscrypt_blocklist_remote_url | length > 0 or dnscrypt_blocklist_local_files | length > 0 or dnscrypt_blockall_default_enable | bool
+
+- name: Configure blocklist logging
+  community.general.ini_file:
+    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    section: blocked_names
     option: log_file
-    value: "'{{ dnscrypt_proxy_blacklist_logpath | default(omit) }}'"
+    value: "'{{ dnscrypt_proxy_blocklist_logpath | default(omit) }}'"
     mode: '0644'
     backup: yes
 
-- name: Ensure blacklist cache directory exists
+- name: Configure allowlist - multiple files
+  community.general.ini_file:
+    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    section: allowed_names
+    option: allowed_names_file
+    value: "'/var/spool/dnscrypt/allowlist_final.txt'"
+    mode: '0644'
+    backup: yes
+  when:
+    - dnscrypt_allowlist_remote_url | length > 0 or dnscrypt_allowlist_local_files | length > 0
+
+- name: Configure allowlist logging
+  community.general.ini_file:
+    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    section: allowed_names
+    option: log_file
+    value: "'{{ dnscrypt_proxy_allowlist_logpath | default(omit) }}'"
+    mode: '0644'
+    backup: yes
+
+- name: Ensure dnscrypt list user exists
+  ansible.builtin.user:
+    name: "{{ dnscrypt_list_user }}"
+    home: /nonexistent
+    create_home: no
+    system: yes
+
+- name: Ensure blocklist cache directory exists
   ansible.builtin.file:
-    dest: "{{ dnscrypt_proxy_blacklist_path }}"
+    dest: "{{ dnscrypt_proxy_blocklist_path }}"
     state: directory
     mode: '0755'
-    owner: nobody
+    owner: "{{ dnscrypt_list_user }}"
 
 - name: Debian | ensure cron is installed
   ansible.builtin.apt:
@@ -48,32 +97,44 @@
 
 - name: Set file for exclusions
   ansible.builtin.template:
-    src: "{{ dnscrypt_proxy_blacklist_exclude_template }}.j2"
-    dest: "{{ dnscrypt_proxy_blacklist_exclude }}"
+    src: "{{ dnscrypt_proxy_blocklist_exclude_template }}.j2"
+    dest: "{{ dnscrypt_proxy_blocklist_exclude }}"
     mode: '0644'
     backup: yes
 
-- name: Ensure schedule task to retrieve blacklist
+- name: Set merge block/allow list script
+  ansible.builtin.template:
+    src: "merge_list.sh.j2"
+    dest: "/usr/local/scripts/merge_list.sh"
+    mode: '0755'
+    backup: yes
+
+- name: Ensure /var/spool/dnscrypt exists
+  ansible.builtin.file:
+    path: /var/spool/dnscrypt
+    mode: '0700'
+    owner: "{{ dnscrypt_list_user }}"
+    state: directory
+
+- name: Ensure schedule task to retrieve blocklist
   ansible.builtin.cron:
-    name: dnscrypt blacklist update
+    name: dnscrypt blocklist update
     minute: '0'
     hour: '2'
-    user: nobody
-    job: >
-      curl -s {{ dnscrypt_proxy_blacklist }} | egrep -v -f {{ dnscrypt_proxy_blacklist_exclude }} > {{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}
-    cron_file: ansible_dnscrypt-proxy2_blacklist
+    user: "{{ dnscrypt_list_user }}"
+    job: /usr/local/scripts/merge_list.sh
+    cron_file: ansible_dnscrypt-proxy2_blocklist
 
-- name: Check if blacklist file
+- name: Check if blocklist file
   ansible.builtin.stat:
-    path: "{{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}"
-  register: blacklistf
+    path: "{{ dnscrypt_proxy_blocklist_path }}/{{ dnscrypt_proxy_blocklist | basename }}"
+  register: blocklistf
 
-- name: Ensure initial blacklist exists
-  ansible.builtin.get_url:
-    url: "{{ dnscrypt_proxy_blacklist }}"
-    dest: "{{ dnscrypt_proxy_blacklist_path }}/{{ dnscrypt_proxy_blacklist | basename }}"
-    owner: nobody
-    mode: '0644'
-  register: dl_result
-  until: dl_result is success
-  when: not blacklistf.stat.exists
+- name: Ensure initial blocklist exists
+  ansible.builtin.command:
+    cmd: /usr/local/scripts/merge_list.sh
+  args:
+    creates: "${workdir}/blocklist_final.txt"
+  when:
+    - not blocklistf.stat.exists
+    - false

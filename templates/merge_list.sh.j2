@@ -1,0 +1,47 @@
+#!/bin/sh
+{{ ansible_managed | comment }}
+#
+# Merge multiple domain list files to be used by dnscrypt
+#
+# TODO: ensure deduplication but likely need to remove comments
+
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+umask 077
+
+blocklist_remote_url="{{ dnscrypt_blocklist_remote_url | join(' ') }}"
+blocklist_local_files="{{ dnscrypt_blocklist_local_files | join(' ') }}"
+allowlist_remote_url="{{ dnscrypt_allowlist_remote_url | join(' ') }}"
+allowlist_local_files="{{ dnscrypt_allowlist_local_files | join(' ') }}"
+workdir=/var/spool/dnscrypt
+block_final="${workdir}/blocklist_final.txt"
+allow_final="${workdir}/allowlist_final.txt"
+
+cd "${workdir}" || exit
+
+# Download all files
+for url in ${blocklist_remote_url} ${allowlist_remote_url}; do
+  curl -sO --retry 3 --retry-delay 2 "${url}"
+done
+
+# Merge block content
+{% if not dnscrypt_blockall_default_enable | bool %}
+savelog -c 7 "${block_final}"
+for file in ${blocklist_remote_url}; do
+    [ -f "${workdir}/${file##*/}" ] && grep -vE -f {{ dnscrypt_proxy_blocklist_exclude }} "${workdir}/${file##*/}" >> "${block_final}"
+done
+for file in ${blocklist_local_files}; do
+    [ -f "${file}" ] && grep -vE -f {{ dnscrypt_proxy_blocklist_exclude }} "${file}" >> "${block_final}"
+done
+
+{% endif %}
+# Merge allow content
+savelog -c 7 "${allow_final}"
+for file in ${allowlist_remote_url}; do
+    [ -f "${workdir}/${file##*/}" ] && cat "${workdir}/${file##*/}" >> "${allow_final}"
+done
+for file in ${allowlist_local_files}; do
+    [ -f "${file}" ] && cat "${file}" >> "${allow_final}"
+done
+
+# Restart service
+#systemctl restart dnscrypt-proxy
