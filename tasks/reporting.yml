@@ -1,11 +1,5 @@
 ---
 
-- name: Ensure /usr/local/scripts exists
-  ansible.builtin.file:
-    dest: /usr/local/scripts
-    state: directory
-    mode: '0755'
-
 - name: Ensure reporting script exists
   ansible.builtin.template:
     src: "{{ dnscrypt_reporting_template }}.j2"
