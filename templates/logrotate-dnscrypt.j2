@@ -1,6 +1,6 @@
 {{ ansible_managed | comment }}
 ## /etc/logrotate.d/dnscrypt
-{{ dnscrypt_proxy_logslist | default([dnscrypt_proxy_blacklist_logpath]) | join("\n") }} {
+{{ dnscrypt_proxy_logslist | default([dnscrypt_proxy_blocklist_logpath, dnscrypt_proxy_allowlist_logpath]) | join("\n") }} {
     rotate {{ dnscrypt_logrotate_days | default(7) |int }}
     daily
     missingok
