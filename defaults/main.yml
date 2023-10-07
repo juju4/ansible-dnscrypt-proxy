@@ -19,9 +19,11 @@ dnscrypt_proxy_allowlist_logpath: /var/log/dnscrypt-proxy2-allowlist.log
 dnscrypt_blocklist_remote_url:
   - https://download.dnscrypt.info/blacklists/domains/mybase.txt
   - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+dnscrypt_blocklist_upload_templates: []
 dnscrypt_blocklist_local_files: []
 dnscrypt_blockall_default_enable: false
 dnscrypt_allowlist_remote_url: []
+dnscrypt_allowlist_upload_templates: []
 dnscrypt_allowlist_local_files: []
 dnscrypt_list_user: _dnscrypt
 

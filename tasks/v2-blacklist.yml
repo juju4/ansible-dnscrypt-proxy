@@ -5,8 +5,25 @@
     dest: "/var/spool/dnscrypt/blocklist_final.txt"
     content: "*.*"
     mode: '0644'
+  notify:
+    - Update allow/block lists
+    - Restart dnscrypt
   when:
     - dnscrypt_blockall_default_enable | bool
+
+- name: Upload allow/block list
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/var/spool/dnscrypt/{{ item | basename }}"
+    mode: '0644'
+    backup: yes
+  loop: "{{ dnscrypt_allowlist_upload_templates + dnscrypt_blocklist_upload_templates }}"
+  notify:
+    - Update allow/block lists
+    - Restart dnscrypt
+  when:
+    - dnscrypt_allowlist_upload_templates | length > 0 or dnscrypt_blocklist_upload_templates | length > 0
+
 
 - name: Configure blocklist - single file
   community.general.ini_file:
@@ -16,6 +33,9 @@
     value: "'{{ dnscrypt_proxy_blocklist_path }}/{{ dnscrypt_proxy_blocklist | basename }}'"
     mode: '0644'
     backup: yes
+  notify:
+    - Update allow/block lists
+    - Restart dnscrypt
   when:
     - dnscrypt_proxy_blocklist|string
     - not (dnscrypt_blocklist_remote_url | length > 0 or dnscrypt_blocklist_local_files | length > 0 or dnscrypt_blockall_default_enable | bool)
@@ -29,6 +49,9 @@
     value: "'/var/spool/dnscrypt/blocklist_final.txt'"
     mode: '0644'
     backup: yes
+  notify:
+    - Update allow/block lists
+    - Restart dnscrypt
   when:
     - dnscrypt_blocklist_remote_url | length > 0 or dnscrypt_blocklist_local_files | length > 0 or dnscrypt_blockall_default_enable | bool
 
@@ -40,6 +63,8 @@
     value: "'{{ dnscrypt_proxy_blocklist_logpath | default(omit) }}'"
     mode: '0644'
     backup: yes
+  notify:
+    - Restart dnscrypt
 
 - name: Configure allowlist - multiple files
   community.general.ini_file:
@@ -49,6 +74,8 @@
     value: "'/var/spool/dnscrypt/allowlist_final.txt'"
     mode: '0644'
     backup: yes
+  notify:
+    - Restart dnscrypt
   when:
     - dnscrypt_allowlist_remote_url | length > 0 or dnscrypt_allowlist_local_files | length > 0
 
@@ -60,6 +87,8 @@
     value: "'{{ dnscrypt_proxy_allowlist_logpath | default(omit) }}'"
     mode: '0644'
     backup: yes
+  notify:
+    - Restart dnscrypt
 
 - name: Ensure dnscrypt list user exists
   ansible.builtin.user:
@@ -136,6 +165,8 @@
     cmd: /usr/local/scripts/merge_list.sh
   args:
     creates: "${workdir}/blocklist_final.txt"
+  notify:
+    - Restart dnscrypt
   when:
     - not blocklistf.stat.exists
     - false

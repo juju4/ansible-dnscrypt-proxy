@@ -1,5 +1,11 @@
 ---
 
+- name: Update allow/block lists
+  ansible.builtin.command:  # noqa no-changed-when
+    cmd: /usr/local/scripts/merge_list.sh
+  become: yes
+  become_user: "{{ dnscrypt_list_user }}"
+
 - name: Restart dnscrypt
   ansible.builtin.service:
     name: dnscrypt-proxy
