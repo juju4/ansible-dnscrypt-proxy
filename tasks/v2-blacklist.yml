@@ -113,7 +113,7 @@
   until: pkg_result is success
 
 - name: RedHat | ensure cron is installed
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: crontabs
     state: present
   when: ansible_os_family == "RedHat"
