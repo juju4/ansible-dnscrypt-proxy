@@ -22,3 +22,5 @@ dnscryptproxy_src_deps:
 dnscryptproxy_src_systemd_deps:
     - pkgconfig
     - systemd-devel
+
+syslog_user: root
