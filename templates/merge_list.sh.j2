@@ -25,7 +25,7 @@ done
 
 # Merge block content
 {% if not dnscrypt_blockall_default_enable | bool %}
-savelog -c 7 "${block_final}"
+savelog -c 7 "${block_final}" >/dev/null
 for file in ${blocklist_remote_url}; do
     [ -f "${workdir}/${file##*/}" ] && grep -vE -f {{ dnscrypt_proxy_blocklist_exclude }} "${workdir}/${file##*/}" >> "${block_final}"
 done
@@ -35,7 +35,7 @@ done
 
 {% endif %}
 # Merge allow content
-savelog -c 7 "${allow_final}"
+savelog -c 7 "${allow_final}" >/dev/null
 for file in ${allowlist_remote_url}; do
     [ -f "${workdir}/${file##*/}" ] && cat "${workdir}/${file##*/}" >> "${allow_final}"
 done
