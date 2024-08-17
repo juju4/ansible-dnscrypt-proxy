@@ -19,7 +19,8 @@
 
 {% if dnscrypt_reporting %}
     prerotate
-        test ! -x /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} || sudo -u syslog /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} 2>&1 >/dev/null
+        # test ! -x /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} || sudo -u syslog /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} 2>&1 >/dev/null
+        test ! -x /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} || {% if ansible_distribution == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}/usr/local/scripts/{{ dnscrypt_reporting_template | basename }} 2>&1 | {% if ansible_distribution == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}tee /tmp/logrotate-dnscrypt >/dev/null
     endscript
 {% endif %}
 }
