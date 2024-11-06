@@ -10,10 +10,6 @@
   ansible.builtin.include_vars: "CentOS-{{ ansible_distribution_version.split('.')[0] }}.yml"
   when: ansible_os_family == "RedHat"
 
-- name: Debug | dnscryptproxy version
-  ansible.builtin.debug:
-    var: dnscryptproxy_v
-
 - name: Ensure /usr/local/scripts exists
   ansible.builtin.file:
     dest: /usr/local/scripts

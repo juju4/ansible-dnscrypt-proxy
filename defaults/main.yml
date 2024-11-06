@@ -31,8 +31,6 @@ dnscrypt_proxy_config: []
 #  - { section: 'query_log', option: 'file', value: '/var/log/dnscrypt-proxy2-query.log' }
 #  - { section: 'nx_log', option: 'file', value: '/var/log/dnscrypt-proxy2-nx.log' }
 
-# dnscryptproxy_v: 1
-
 ## maybe ovveriden by distribution values (from their packages)
 dnscryptproxy_user: dnscrypt
 
