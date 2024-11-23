@@ -57,12 +57,12 @@
   ansible.builtin.file:
     dest: /etc/nagios/nrpe.d
     state: directory
-    mode: 0755
+    mode: '0755'
 - name: Add some nrpe commands for monitoring
   ansible.builtin.copy:
     src: dnscrypt-nrpe.cfg
     dest: /etc/nagios/nrpe.d/dnscrypt-nrpe.cfg
-    mode: 0644
+    mode: '0644'
 
 - name: Import reporting
   ansible.builtin.import_tasks: reporting.yml
