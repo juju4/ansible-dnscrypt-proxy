@@ -76,6 +76,13 @@ jobs:
           ss -nlp
         if: ${{ always() }}
         continue-on-error: true
+      - name: After script - dnscrypt
+        run: |
+          /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy -list
+          /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy -check
+          /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy -resolve google.com
+        if: ${{ always() }}
+        continue-on-error: true
       - name: After script - report
         run: |
           sudo -u syslog /usr/local/scripts/dnscrypt_report.sh
