@@ -26,7 +26,9 @@
 
 # https://wiki.archlinux.org/index.php/Systemd-resolved
 - name: Systemd-resolved
-  when: systemdresolved.stat.exists
+  when:
+    - systemdresolved.stat.exists
+    - dnscrypt_set_nameserver_enable | bool
   block:
     - name: Update systemd-resolved configuration to use dnscrypt-proxy only
       ansible.builtin.lineinfile:
@@ -36,7 +38,7 @@
         mode: '0644'
         backup: yes
       with_items:
-        - { re: '^DNS=.*', l: 'DNS=127.0.0.2' }
+        - { re: '^DNS=.*', l: 'DNS={{ dnscrypt_set_nameserver }}' }
         - { re: '^Domains=.*', l: 'Domains=~.' }
       notify:
         - Restart systemd-resolved
@@ -45,13 +47,15 @@
 - name: Enable dnscrypt in resolv.conf
   ansible.builtin.lineinfile:
     dest: /etc/resolv.conf
-    line: "nameserver 127.0.0.2"
+    regexp: "nameserver 127.*"
+    line: "nameserver {{ dnscrypt_set_nameserver }}"
     mode: '0644'
     insertbefore: BOF
     backup: yes
-  when: >
-    (ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker') and
-    not systemdresolved.stat.exists
+  when:
+    - (ansible_virtualization_type is not defined or ansible_virtualization_type != 'docker')
+    - not systemdresolved.stat.exists
+    - dnscrypt_set_nameserver_enable | bool
 
 - name: Ensure nrpe.d dir exists
   ansible.builtin.file:

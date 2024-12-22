@@ -73,6 +73,14 @@
     dnscrypt_allowlist_remote_url | length > 0 or dnscrypt_allowlist_local_files | length > 0 or
     dnscrypt_blockall_default_enable | bool
 
+- name: Copy additional files
+  ansible.builtin.copy:
+    src: "{{ item.s }}"
+    dest: "/opt/dnscrypt-proxy2/linux-x86_64/{{ item.d }}"
+    mode: '0644'
+    owner: root
+  loop: "{{ dnscrypt_proxy_files_upload }}"
+
 - name: Install dnscrypt-proxy2 service
   ansible.builtin.command: ./dnscrypt-proxy -service install
   args:
