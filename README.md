@@ -3,23 +3,18 @@
 
 # dnscrypt proxy ansible role
 
-Ansible role to setup dnscrypt proxy
+Ansible role to setup [dnscrypt proxy](https://github.com/DNSCrypt/dnscrypt-proxy)
 Allow to encrypt dns traffic to a central dns server in order to provide better privacy.
 
 ## Requirements & Dependencies
 
 ### Ansible
 It was tested on the following versions:
- * 1.9
- * 2.0
- * 2.2
- * 2.3
- * 2.10
+ * 2.10-17
 
 ### Operating systems
 
-Tested on Ubuntu 18.04, 20.04, 22.04 and Centos 7-8
-Vagrant, Kitchen test and Github Action available
+Tested on Ubuntu 24.04, 22.04, 20.04, Centos/Rockylinux 9.
 
 ### Dependencies
 
@@ -33,7 +28,7 @@ For example
 ```
 - host: myhost
   roles:
-    - juju4.dnscrypt-proxy
+    - juju4.dnscryptproxy
 ```
 
 If you want to use it with a dns cacher
