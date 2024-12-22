@@ -31,6 +31,6 @@ SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @chown @keyring
 SystemCallErrorNumber=EPERM
 {% endif %}
 {% endif %}
-CPUShares={{ dnscryptproxy_cgroups_cpushares | default('1024') }}
+CPUWeight={{ dnscryptproxy_cgroups_cpushares | default('1024') }}
 CPUQuota={{ dnscryptproxy_cgroups_cpuquota | default('80%') }}
-MemoryLimit={{ dnscryptproxy_cgroups_memorylimit | default('2G') }}
+MemoryMax={{ dnscryptproxy_cgroups_memorylimit | default('2G') }}
