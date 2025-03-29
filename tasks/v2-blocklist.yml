@@ -146,7 +146,7 @@
     owner: "{{ dnscrypt_list_user }}"
     state: directory
 
-- name: Ensure schedule task to retrieve blocklist
+- name: Ensure schedule task to retrieve block/allow list
   ansible.builtin.cron:
     name: dnscrypt blocklist update
     minute: '0'
@@ -160,7 +160,7 @@
     path: "{{ dnscrypt_proxy_blocklist_path }}/{{ dnscrypt_proxy_blocklist | basename }}"
   register: blocklistf
 
-- name: Ensure initial blocklist exists
+- name: Ensure initial block/allow list exists
   ansible.builtin.command:
     cmd: /usr/local/scripts/merge_list.sh
   args:
@@ -169,4 +169,3 @@
     - Restart dnscrypt
   when:
     - not blocklistf.stat.exists
-    - false

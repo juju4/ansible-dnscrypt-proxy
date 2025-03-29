@@ -65,8 +65,8 @@
     backup: yes
   with_items: "{{ dnscrypt_proxy_config }}"
 
-- name: Import v2-blacklist
-  ansible.builtin.import_tasks: v2-blacklist.yml
+- name: Import v2-blocklist
+  ansible.builtin.import_tasks: v2-blocklist.yml
   when: |
     dnscrypt_proxy_blocklist|string or
     dnscrypt_blocklist_remote_url | length > 0 or dnscrypt_blocklist_local_files | length > 0 or
