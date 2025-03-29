@@ -167,5 +167,6 @@
     creates: "${workdir}/blocklist_final.txt"
   notify:
     - Restart dnscrypt
-  when:
-    - not blocklistf.stat.exists
+  when: >
+    not blocklistf.stat.exists or
+    dnscrypt_proxy_mergelist_force | bool

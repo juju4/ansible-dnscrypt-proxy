@@ -25,6 +25,7 @@ dnscrypt_blockall_default_enable: false
 dnscrypt_allowlist_remote_url: []
 dnscrypt_allowlist_upload_templates: []
 dnscrypt_allowlist_local_files: []
+dnscrypt_proxy_mergelist_force: false
 dnscrypt_list_user: _dnscrypt
 
 dnscrypt_proxy_config: []
