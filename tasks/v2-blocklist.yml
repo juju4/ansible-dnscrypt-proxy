@@ -1,5 +1,19 @@
 ---
 
+- name: Ensure dnscrypt list user exists
+  ansible.builtin.user:
+    name: "{{ dnscrypt_list_user }}"
+    home: /nonexistent
+    create_home: no
+    system: yes
+
+- name: Ensure /var/spool/dnscrypt exists
+  ansible.builtin.file:
+    path: /var/spool/dnscrypt
+    mode: '0700'
+    owner: "{{ dnscrypt_list_user }}"
+    state: directory
+
 - name: Configure allow-only blocklist
   ansible.builtin.copy:
     dest: "/var/spool/dnscrypt/blocklist_final.txt"
@@ -90,13 +104,6 @@
   notify:
     - Restart dnscrypt
 
-- name: Ensure dnscrypt list user exists
-  ansible.builtin.user:
-    name: "{{ dnscrypt_list_user }}"
-    home: /nonexistent
-    create_home: no
-    system: yes
-
 - name: Ensure blocklist cache directory exists
   ansible.builtin.file:
     dest: "{{ dnscrypt_proxy_blocklist_path }}"
@@ -138,13 +145,6 @@
     dest: "/usr/local/scripts/merge_list.sh"
     mode: '0755'
     backup: yes
-
-- name: Ensure /var/spool/dnscrypt exists
-  ansible.builtin.file:
-    path: /var/spool/dnscrypt
-    mode: '0700'
-    owner: "{{ dnscrypt_list_user }}"
-    state: directory
 
 - name: Ensure schedule task to retrieve block/allow list
   ansible.builtin.cron:
