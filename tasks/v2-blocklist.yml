@@ -51,7 +51,7 @@
     - Update allow/block lists
     - Restart dnscrypt
   when:
-    - dnscrypt_proxy_blocklist|string
+    - dnscrypt_proxy_blocklist | length > 0
     - not (dnscrypt_blocklist_remote_url | length > 0 or dnscrypt_blocklist_local_files | length > 0 or dnscrypt_blockall_default_enable | bool)
     - not dnscrypt_blockall_default_enable | bool
 
