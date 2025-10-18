@@ -5,7 +5,7 @@
     url: "{{ dnscryptproxyv2_url }}"
     dest: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
     mode: '0644'
-    checksum: "{{ dnscryptproxyv2_hash }}"
+    checksum: "{{ dnscryptproxyv2_hash | default(omit) }}"
     backup: yes
   register: dl_result
   until: dl_result is success
