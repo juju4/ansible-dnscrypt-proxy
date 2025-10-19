@@ -8,7 +8,11 @@
       "description": "Automerge non-major updates",
       "matchUpdateTypes": [
         "minor",
-        "patch"
+        "patch",
+        "pin",
+        "pinDigest",
+        "digest",
+        "lockFileMaintenance"
       ],
       "automerge": true,
       "minimumReleaseAge": "1 day"
