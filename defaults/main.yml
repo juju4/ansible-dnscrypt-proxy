@@ -1,6 +1,6 @@
 ---
 # renovate: datasource=github-releases depName=DNSCrypt/dnscrypt-proxy
-dnscryptproxyv2_github_version: 2.1.12
+dnscryptproxyv2_github_version: '2.1.12'
 dnscryptproxyv2_url: 'https://github.com/DNSCrypt/dnscrypt-proxy/releases/download/{{ dnscryptproxyv2_github_version }}/dnscrypt-proxy-linux_x86_64-{{ dnscryptproxyv2_github_version }}.tar.gz'
 # dnscryptproxyv2_hash: 'sha256:6970a8a16cc1a479504dfbaa7bd969ab2aebb6e222ff5b85412f76f98a920260'
 # dnscryptproxyv2_listen: "['127.0.0.1:53', '[::1]:53']"
