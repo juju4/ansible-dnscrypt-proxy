@@ -7,6 +7,7 @@
     mode: '0644'
     checksum: "{{ dnscryptproxyv2_hash | default(omit) }}"
     backup: yes
+  environment: "{{ proxy_env | default(omit) }}"
   register: dl_result
   until: dl_result is success
 
