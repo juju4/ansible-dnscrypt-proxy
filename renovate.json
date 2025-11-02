@@ -15,7 +15,18 @@
         "lockFileMaintenance"
       ],
       "automerge": true,
+      "addLabels": ["automerge"],
       "minimumReleaseAge": "1 day"
+    },
+    {
+      "matchManagers": [
+        "docker",
+        "custom.regex",
+        "ansible",
+        "node",
+        "python"
+      ],
+      "groupName": "{{manager}}"
     }
   ],
   "vulnerabilityAlerts": {
@@ -47,5 +58,8 @@
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
     }
-  ]
+  ],
+  "pre-commit": {
+    "enabled": true
+  }
 }
