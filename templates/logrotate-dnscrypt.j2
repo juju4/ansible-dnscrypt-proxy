@@ -13,14 +13,14 @@
           invoke-rc.d dnscrypt-proxy restart > /dev/null 2>&1; \
        fi;
     endscript
-    create 644 {% if ansible_distribution == 'Ubuntu' %}syslog syslog{% else %}root root{% endif %}
+    create 644 {% if ansible_facts['distribution'] == 'Ubuntu' %}syslog syslog{% else %}root root{% endif %}
 
-    su root {% if ansible_distribution == 'Ubuntu' %}syslog{% else %}root{% endif %}
+    su root {% if ansible_facts['distribution'] == 'Ubuntu' %}syslog{% else %}root{% endif %}
 
 {% if dnscrypt_reporting %}
     prerotate
         # test ! -x /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} || sudo -u syslog /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} 2>&1 >/dev/null
-        test ! -x /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} || {% if ansible_distribution == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}/usr/local/scripts/{{ dnscrypt_reporting_template | basename }} 2>&1 | {% if ansible_distribution == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}tee /tmp/logrotate-dnscrypt >/dev/null
+        test ! -x /usr/local/scripts/{{ dnscrypt_reporting_template | basename }} || {% if ansible_facts['distribution'] == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}/usr/local/scripts/{{ dnscrypt_reporting_template | basename }} 2>&1 | {% if ansible_facts['distribution'] == 'Ubuntu' %}sudo -u {{ syslog_user }} {% endif %}tee /tmp/logrotate-dnscrypt >/dev/null
     endscript
 {% endif %}
 }
