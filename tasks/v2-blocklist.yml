@@ -115,7 +115,7 @@
   ansible.builtin.apt:
     name: cron
     state: present
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
   register: pkg_result
   until: pkg_result is success
 
@@ -123,7 +123,7 @@
   ansible.builtin.dnf:
     name: crontabs
     state: present
-  when: ansible_os_family == "RedHat"
+  when: ansible_facts['os_family'] == "RedHat"
   register: pkg_result
   until: pkg_result is success
 

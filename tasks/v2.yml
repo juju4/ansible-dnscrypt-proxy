@@ -95,4 +95,4 @@
   ansible.builtin.service:
     name: dnscrypt-proxy
     state: started
-  when: not (ansible_virtualization_type is defined and ansible_virtualization_type == "docker")
+  when: not (ansible_facts['virtualization_type'] is defined and ansible_facts['virtualization_type'] == "docker")
