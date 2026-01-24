@@ -41,7 +41,7 @@
 
 - name: Configure blocklist - single file
   community.general.ini_file:
-    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    path: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy.toml"
     section: blocked_names
     option: blocked_names_file
     value: "'{{ dnscrypt_proxy_blocklist_path }}/{{ dnscrypt_proxy_blocklist | basename }}'"
@@ -57,7 +57,7 @@
 
 - name: Configure blocklist - multiple files
   community.general.ini_file:
-    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    path: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy.toml"
     section: blocked_names
     option: blocked_names_file
     value: "'/var/spool/dnscrypt/blocklist_final.txt'"
@@ -71,7 +71,7 @@
 
 - name: Configure blocklist logging
   community.general.ini_file:
-    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    path: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy.toml"
     section: blocked_names
     option: log_file
     value: "'{{ dnscrypt_proxy_blocklist_logpath | default(omit) }}'"
@@ -82,7 +82,7 @@
 
 - name: Configure allowlist - multiple files
   community.general.ini_file:
-    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    path: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy.toml"
     section: allowed_names
     option: allowed_names_file
     value: "'/var/spool/dnscrypt/allowlist_final.txt'"
@@ -95,7 +95,7 @@
 
 - name: Configure allowlist logging
   community.general.ini_file:
-    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    path: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy.toml"
     section: allowed_names
     option: log_file
     value: "'{{ dnscrypt_proxy_allowlist_logpath | default(omit) }}'"

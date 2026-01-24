@@ -10,6 +10,7 @@
   environment: "{{ proxy_env | default(omit) }}"
   register: dl_result
   until: dl_result is success
+  when: false
 
 - name: Ensure /opt/dnscrypt-proxy2 exists
   ansible.builtin.file:
@@ -23,24 +24,24 @@
     dest: /opt/dnscrypt-proxy2
     mode: '0755'
     copy: no
-    creates: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy
+    creates: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy"
 
 - name: Check if existing config
   ansible.builtin.stat:
-    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    path: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy.toml"
   register: cfg
 
 - name: Initiate config
   ansible.builtin.copy:
-    src: /opt/dnscrypt-proxy2/linux-x86_64/example-dnscrypt-proxy.toml
-    dest: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    src: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/example-dnscrypt-proxy.toml"
+    dest: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy.toml"
     mode: '0644'
     remote_src: true
   when: not cfg.stat.exists
 
 - name: Configure listen address
   community.general.ini_file:
-    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    path: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy.toml"
     section: null
     option: listen_addresses
     value: "{{ dnscryptproxyv2_listen | string }}"
@@ -50,7 +51,7 @@
 
 - name: Configure max_clients
   community.general.ini_file:
-    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    path: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy.toml"
     section: null
     option: max_clients
     value: "{{ dnscrypt_proxy_max_clients | default(1000) }}"
@@ -58,7 +59,7 @@
 
 - name: Configure other options
   community.general.ini_file:
-    path: /opt/dnscrypt-proxy2/linux-x86_64/dnscrypt-proxy.toml
+    path: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/dnscrypt-proxy.toml"
     section: "{{ item.section }}"
     option: "{{ item.option }}"
     value: "'{{ item.value }}'"
@@ -77,7 +78,7 @@
 - name: Copy additional files
   ansible.builtin.copy:
     src: "{{ item.s }}"
-    dest: "/opt/dnscrypt-proxy2/linux-x86_64/{{ item.d }}"
+    dest: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}/{{ item.d }}"
     mode: '0644'
     owner: root
   loop: "{{ dnscrypt_proxy_files_upload }}"
@@ -85,13 +86,13 @@
 - name: Install dnscrypt-proxy2 service
   ansible.builtin.command: ./dnscrypt-proxy -service install
   args:
-    chdir: /opt/dnscrypt-proxy2/linux-x86_64
+    chdir: "/opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}"
     creates: /etc/systemd/system/dnscrypt-proxy.service
 
 - name: Start dnscrypt-proxy2 service
   # command: ./dnscrypt-proxy -service start
   # args:
-  #   chdir: /opt/dnscrypt-proxy2/linux-x86_64
+  #   chdir: /opt/dnscrypt-proxy2/{{ dnscrypt_platform }}-{{ dnscrypt_arch }}
   ansible.builtin.service:
     name: dnscrypt-proxy
     state: started

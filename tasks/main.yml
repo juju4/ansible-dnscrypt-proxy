@@ -10,6 +10,37 @@
   ansible.builtin.include_vars: "CentOS-{{ ansible_facts['distribution_major_version'] }}.yml"
   when: ansible_facts['os_family'] == "RedHat"
 
+- name: Linux platform
+  ansible.builtin.set_fact:
+    dnscrypt_platform: linux
+  when: ansible_facts['system'] == 'Linux'
+- name: Darwin platform
+  ansible.builtin.set_fact:
+    dnscrypt_platform: macos
+  when: ansible_facts['system'] == 'MacOS'
+- name: X86_64 arch
+  ansible.builtin.set_fact:
+    dnscrypt_arch: x86_64
+    dnscryptproxyv2_url: "{{ dnscryptproxyv2_url_base }}/dnscrypt-proxy-linux_x86_64-{{ dnscryptproxyv2_github_version }}.tar.gz"
+  when: ansible_facts['architecture'] == 'x86_64'
+- name: Armv6l arch
+  ansible.builtin.set_fact:
+    dnscrypt_arch: arm
+    dnscryptproxyv2_url: "{{ dnscryptproxyv2_url_base }}/dnscrypt-proxy-{{ dnscrypt_platform }}_arm-{{ dnscryptproxyv2_github_version }}.tar.gz"
+  when: ansible_facts['architecture'] == 'armv6l'
+- name: Aarch64 arch
+  ansible.builtin.set_fact:
+    dnscrypt_arch: arm64
+    dnscryptproxyv2_url: "{{ dnscryptproxyv2_url_base }}/dnscrypt-proxy-{{ dnscrypt_platform }}_arm64-{{ dnscryptproxyv2_github_version }}.tar.gz"
+  when: ansible_facts['architecture'] == 'aarch64'
+- name: Debug
+  ansible.builtin.debug:
+    var: "{{ item }}"
+    verbosity: 1
+  loop:
+    - ansible_facts['system']
+    - ansible_facts['architecture']
+
 - name: Ensure /usr/local/scripts exists
   ansible.builtin.file:
     dest: /usr/local/scripts
