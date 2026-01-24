@@ -10,7 +10,6 @@
   environment: "{{ proxy_env | default(omit) }}"
   register: dl_result
   until: dl_result is success
-  when: false
 
 - name: Ensure /opt/dnscrypt-proxy2 exists
   ansible.builtin.file:
