@@ -1,15 +1,35 @@
 ---
 
-- name: Download dnscrypt v2
-  ansible.builtin.get_url:
-    url: "{{ dnscryptproxyv2_url }}"
-    dest: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
-    mode: '0644'
-    checksum: "{{ dnscryptproxyv2_hash | default(omit) }}"
-    backup: yes
-  environment: "{{ proxy_env | default(omit) }}"
-  register: dl_result
-  until: dl_result is success
+- name: Download
+  block:
+    - name: Download dnscrypt v2
+      ansible.builtin.get_url:
+        url: "{{ dnscryptproxyv2_url }}"
+        dest: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
+        mode: '0644'
+        checksum: "{{ dnscryptproxyv2_hash | default(omit) }}"
+        backup: yes
+      environment: "{{ proxy_env | default(omit) }}"
+      register: dl_result
+      until: dl_result is success
+  rescue:
+    - name: Download dnscrypt v2 from orchestrator
+      ansible.builtin.get_url:
+        url: "{{ dnscryptproxyv2_url }}"
+        dest: "/tmp/{{ dnscryptproxyv2_url | basename }}"
+        mode: "0644"
+        checksum: "{{ dnscryptproxyv2_hash | default(omit) }}"
+      environment: "{{ proxy_env_orchestrator | default(omit) }}"
+      become: false
+      delegate_to: localhost
+      register: dl_result2
+      until: dl_result2 is success
+    - name: Copy dnscrypt v2 to target
+      ansible.builtin.copy:
+        src: "/tmp/{{ dnscryptproxyv2_url | basename }}"
+        dest: "/var/tmp/{{ dnscryptproxyv2_url | basename }}"
+        mode: "0644"
+        owner: root
 
 - name: Ensure /opt/dnscrypt-proxy2 exists
   ansible.builtin.file:
