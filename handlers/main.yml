@@ -3,6 +3,8 @@
 - name: Update allow/block lists
   ansible.builtin.command:  # noqa no-changed-when
     cmd: /usr/local/scripts/merge_list.sh
+  args:
+    chdir: /tmp
   become: yes
   become_user: "{{ dnscrypt_list_user }}"
 
