@@ -13,4 +13,12 @@
     dest: /etc/logrotate.d/dnscrypt
     mode: '0644'
     backup: yes
-    validate: 'logrotate -dv %s'
+    # error: Ignoring PATH/.source because the file owner is wrong (should be root or user with uid 0).
+    # only a command, not a shell
+    # validate: 'chown root %s && logrotate -dv %s'
+    # validate: 'logrotate -dv %s'
+
+- name: Global logrotate configuration validation
+  ansible.builtin.command:
+    cmd: logrotate -dv /etc/logrotate.conf
+  changed_when: false
